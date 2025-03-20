@@ -25,6 +25,7 @@
  */
 #define INIT_SIZE 5  
 
+struct foo;
 
 /*
  * You may change the internal details of the struct below,
