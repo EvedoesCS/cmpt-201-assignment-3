@@ -103,7 +103,8 @@ int main(int argc, char *argv[]){
                 }
                 else{
                     fprintf(stderr, "Please only choose one number from 1 to 7.");
-                    fgets(memberName, INPUT_LEN, stdin);                }
+                    fgets(memberName, INPUT_LEN, stdin);
+                                }
             }
         
         }
