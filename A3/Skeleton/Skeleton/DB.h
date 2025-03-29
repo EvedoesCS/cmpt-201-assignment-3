@@ -25,11 +25,37 @@
  */
 #define INIT_SIZE 5  
 
+typedef struct table {
+    int count;
+    int id;
+    char *value;
+    struct table *next;
+}Table;
+
+typedef struct {
+    int id;
+    char *name;
+    char *ward;
+    char *latitude;
+    char *longitude;
+    char *location;
+}NeighbourhoodTable;
+
+typedef struct {
+    int id;
+    char *table_type;
+    char *surface_material;
+    char *structural_material;
+    char *street_ave;
+    NeighbourhoodTable *f_key_neighborhood;
+}PicnicTable;
+
 
 /*
  * You may change the internal details of the struct below,
  * only keep it typedef'ed to DataBase
  */
+
 typedef struct {
     // You can add anything you see fit here
     Table *tableTypeTable;
@@ -44,6 +70,93 @@ typedef struct {
 /* DB.c should have the definition of this variable*/
 extern DataBase *Db;
 
+/**********************Backend_Functions*****************************/
+
+
+
+/***************************import_db**********************************
+Purpose: Imports CSV data from a file into a db struct;
+Arguments: filename -> file to read from, db -> db struct to store data
+in;
+Returns: void
+**********************************************************************/
+void importDB(char *filename, DataBase db);
+
+
+/***************************export_db**********************************
+Purpose: Compiles a db struct into lines in CSV format to be written into
+a file;
+Arguments: filename -> file to write to, db file to get CSV data from;
+Returns: void
+**********************************************************************/
+void exportDB(char *filename, DataBase db);
+
+/***************************db_query**********************************
+Purpose: Parses db commands and calls appropriate helper functions to 
+perfrom CRUD (Insert, Select, Update, Delete) functionalities on a db 
+struct;
+Arguments: 
+    command -> Which helper funciton to call,
+    Either: "INSERT", "SELECT", "UPDATE", "DELETE",
+    data -> array of string which need to be added, removed, or selected 
+    from the db struct. Expected to follow KV pair format 
+    Ex. ["Surface Material=foo", "Ward=bar"]
+    data_count -> the number of elements in data, operations will be 
+    performed / helper functions will be called "data_count" number of
+    times;
+    tableID -> The id of the table to perform the opperation on,
+    specifier -> optional targets needed to perform a command. For 
+    example to select row 4, id=4 will be passed. 
+    buffer -> buffer to write the requested data to.
+
+Returns: A string array with the requested data sorted in the same order
+as the corresponding items in data were proccessed.
+**********************************************************************/
+void db_query(char *command, char **data, int data_count, char *tableID, char *specifier, char **buffer);
+
+/***************************db_insert**********************************
+Purpose: Insets a new entry into a table in the db struct; 
+Arguments: data -> the data to insert, tableID -> the id of the table
+to insert into;
+Returns: String with a success or failure message
+**********************************************************************/
+char *db_insert(char *data, char *tableID);
+
+
+/***************************db_update**********************************
+Purpose: Updates an Item in the db struct in the specified table.
+Arguments: 
+    data -> the item(s) to update
+    tableID -> The id of the table to update in
+    specifier -> An optional specifier to target specific columns (fields)
+    in tables.
+Returns: String with a success or failure message
+**********************************************************************/
+char *db_update(char *data, char *tableID, char *specifier);
+
+/***************************db_select**********************************
+Purpose: Finds the requested data in the db struct and returns it in the 
+order it was requested in.
+Arguments: 
+    data -> The data requested in KV pair format ["material_type=wood"]
+    tableID -> the id of the table to perform the operation on.
+    specifier -> An optional specifer to target specific columns (fields)
+    in the table.
+Returns: String with a success or failure message
+**********************************************************************/
+char *db_select(char *data, char *tableID, char *specifier);
+
+/***************************db_delete**********************************
+Purpose: Removes an item from the db and frees all memory associated 
+with it. 
+Arguments: 
+    data -> the items to remove from the table,
+    tableID -> the id of the table to perform the operation on
+    specifier -> an optional specifier to target specific entries in
+    the table.
+Returns: String with a success or failure message
+**********************************************************************/
+char *db_delete(char *data, char *tableID, char *specifier);
 
 /*
  * Take the name of a member of the picnicTable entry and a value for that member 
