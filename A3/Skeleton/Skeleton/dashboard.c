@@ -4,16 +4,16 @@
  * TODO: Provide a high-level description of what is contained
  * in this file.
  *
- * Author: <TODO: Group Member Names>
- * Lab instructor: <TODO: Your lab instructor's name here>
- * Lecture instructor: <TODO: Your lecture instructor's name here>
+ * Author: Helen Ly
+ * Lab instructor: Dhara Wagh
+ * Lecture instructor: Dhara Wagh
 */
 
 //You may include other original headers as you see fit
 
 #include <stdio.h>
-#include "import.c"
-#include "DB.h"
+#include "import.c" //TOBEREMOVED
+#include "DB.h" //TOBEREMOVED
 #include "export.c"
 
 
@@ -52,7 +52,7 @@ char* memberNameforCountEntries(){
     char* options[6]= {"Table Type", "Surface Material", "Structural Material","Neighborhood ID","Neighborhood Name", "Ward"};
     //loop through the array to display memberName menu
     for (int i =0; i<5; i++){
-        printf("%i. %s\n", i, options[i]);
+        printf("%d. %s\n", i+1, options[i]);
     }
     
     char memberName[INPUT_LEN];
@@ -67,20 +67,17 @@ char* memberNameforCountEntries(){
         //when input is NULL, display error message and prompt user input again
         else{
             fprintf(stderr, "Please only choose one number from 1 to 7.");
-            fgets(memberName, INPUT_LEN, stdin);                
         }
 
         //different return strings based on user input
-        if (select == 1) return options[0];
-        if (select == 2) return options[1];
-        if (select == 3) return options[2];
-        if (select == 4) return options[3];
-        if (select == 5) return options[4];
-        if (select == 6) return options[5];
+        if (select >= 1 || select <= 6){
+            return options[select-1];
+        }
+       
         //when input is not within the menu option, print error message and ask for input again
         else{
             printf("Selection was invalid, please select a number from 1 to 7.\n");
-            fgets(memberName, INPUT_LEN, stdin);                
+            //fgets(memberName, INPUT_LEN, stdin);                
         }
         
 }
@@ -95,7 +92,7 @@ char* memberNameforSortbyMember(){
 
     char* options[5]= {"Table Type", "Surface Material", "Structural Material","Neighborhood Name", "Ward"};
     for (int i =0; i<5 ;i++){
-        printf("%i. %s\n", i, options[i]);
+        printf("%d. %s\n", i+1, options[i]);
     }
 
     char memberName[INPUT_LEN];
@@ -106,24 +103,25 @@ char* memberNameforSortbyMember(){
             select = (int) memberName;
         }
         else{
-            fprintf(stderr, "Please only choose one number from 1 to 7.");
-            fgets(memberName, INPUT_LEN, stdin);                
+            fprintf(stderr, "Please only choose one number from 1 to 5.");
         }
 
-
-        if (select == 1) return "Table Type";
-        if (select == 2) return "Surface Material";
-        if (select == 3) return "Structural Material";
-        if (select == 4) return "Neighborhood Name";
-        if (select == 5) return "Ward";
+        if (select >=1 || select <=5){
+            return option[select-1];
+        }
         else{
             printf("Selection was invalid, please select a number from 1 to 7.\n");
             fgets(memberName, INPUT_LEN, stdin);                
         }
     }
 
-    
+    return NULL;
 }
+
+//function prototypes
+void countEntriesOptions(); 
+void sortByOptions();
+
 
 // use as condition to Prevent operations until the database is imported 
 int DatabaseImported = 0; //Database hasn't been imported
@@ -172,7 +170,7 @@ int main(int argc, char *argv[]){
             }
         }
         
-        if (cmd == 2){
+        else if (cmd == 2){
             char* filename;
             printf("Enter the filename to be imported: ");
             if (fgets(filename, FILENAME_LEN, stdin) != NULL){
@@ -185,23 +183,22 @@ int main(int argc, char *argv[]){
             }
         }
 
-        if(cmd == 3){
+        else if(cmd == 3){
             countEntriesOptions();
         }
 
-        if (cmd ==4){
+        else if (cmd ==4){
             char* memberName = memberNameforSortbyMember();
             sortByMember (memberName);
         }
 
-        if (cmd == 5){
+        else if (cmd == 5){
             printf("Need to call editTableEntry here.\n");
 
         }
 
-        if (cmd==6){
-            printf("Need to prompt user input for Ward or Neigborhood ID.\n");
-            printf("based on input, reportByWard\() or reportByNeighborhood() will be called.\n");
+        else if (cmd==6){
+            sortByOptions();
         }
     }
 
@@ -237,3 +234,36 @@ void countEntriesOptions(){
 }
 
 
+/*********************************************************************
+Purpose: get user input for report type options, then generate requested report
+Arguments: void
+Returns: void
+**********************************************************************/
+void sortByOptions(){
+
+    //display menu by looping through the report type options
+    char* options[2] = {"Report By Ward", "Report By Neighborhood ID"};
+    printf("Select the Report Type: \n");
+    for (int i =0; i<2;i++){
+        printf("%d. %s", i+1, options[i]);
+    }
+
+
+    int select;
+    //if user input NULL or more than a number, print error message
+
+    if (scanf ("%d", &select) !=1){
+        printf ("The selection is invalid. Choose 1 or 2 for available report type.\n");
+    }
+    
+    //Otherwise, call the cooresponding report as per user input
+    if (select == 1){
+        reportByWard();
+    }
+    else if (select == 2){
+        reportByNeighbourhood();
+    }
+    else{
+        printf ("Selection is invalid. Only choose 1 or 2.\n");
+    }
+}
