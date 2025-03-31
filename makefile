@@ -7,7 +7,7 @@
 CC=gcc
 CFLAGS= -Wall -g -std=c99
 
-DB: DB.o
+DB: DB.o DB_impl.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.o: %.c $(HEADERS)
