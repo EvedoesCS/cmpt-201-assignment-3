@@ -227,8 +227,7 @@ char *db_update(char *data, char *tableID, char *specifier){
     int tableId = atoi(tableID);
 
     if (temp == NULL) {
-        //printf("PicnicTableTable has no entries!\n");
-        return "Failure";
+        return "Failure: picnicTableTable has no entries.";
     }
 
     while (temp != NULL) {
@@ -240,26 +239,39 @@ char *db_update(char *data, char *tableID, char *specifier){
     }
     if (temp == NULL) {
         //printf("tableID not found. Unable to edit entry.\n");
-        return "Failure";
+        return "Failure: TableID not found.";
     }
     
     //Compare memberName so we can select the table to insert into
     if (strcmp(specifier, "Table Type") == 0) {
         //printf("T - Table Type Selected!\n");
-        temp->tableTypeId = getTableIndex(Db->tableTypeTable, data, temp->tableTypeId);
-        return "Success";
+        int index = getTableIndex(Db->tableTypeTable, data);
+        if (index > 10) {
+            return "Failure: Could not find data in tableTypeTable.";
+        }
+        temp->tableTypeId = index;
+        return "Success\n";
 
     } else if (strcmp(specifier, "Surface Material") == 0) {
         //printf("T - Surface Material Selected!\n");
-        temp->tableTypeId = getTableIndex(Db->surfaceMaterialTable, data, temp->tableTypeId);
+        int index = getTableIndex(Db->surfaceMaterialTable, data);
+        if (index > 10) {
+            return "Failure: Could not find data in surfaceMaterialTable.";
+        }
+        temp->tableTypeId = index;
         return "Success";
 
     } else if (strcmp(specifier, "Structural Material") == 0) {
         //printf("T - Structural Material Selected!\n");
-        temp->tableTypeId = getTableIndex(Db->structuralMaterialTable, data, temp->tableTypeId);
+        int index = getTableIndex(Db->structuralMaterialTable, data);
+        if (index > 10) {
+            return "Failure: Could not find data in structuralMaterialTable.";
+        }
+        temp->tableTypeId = index;
         return "Success";
     }
-    return "Failure";
+
+    return "Failure: Could not find given member.";
 }
 
 char *db_select(char *data, char *tableID, char *specifier){
@@ -270,6 +282,15 @@ char *db_select(char *data, char *tableID, char *specifier){
 char *db_delete(char *data, char *tableID, char *specifier){
     char *msg = "foo";
     return msg;
+}
+
+void freeDB() {
+    free(Db->tableTypeTable);
+    free(Db->surfaceMaterialTable);
+    free(Db->structuralMaterialTable);
+    freeNeighbourhoodTable(Db->neighborhoodTable);
+    freePicnicTable(Db->picnicTableTable);
+    free(Db);
 }
 
 int main(void) {
