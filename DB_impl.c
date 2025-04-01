@@ -69,7 +69,7 @@ void tokenize_string_impl(char *line, char *tokens[11]) {
 }
 
 
-int getTableIndex(Table* table, char* value, int backupId) { //Gets the index of a given string in a table's array
+int getTableIndex(Table* table, char* value) { //Gets the index of a given string in a table's array
     if (table == NULL) {
         printf("Table is NULL! Unable to get index!\n");
     }
@@ -84,8 +84,37 @@ int getTableIndex(Table* table, char* value, int backupId) { //Gets the index of
         i++;
     }
     
-    printf("Unable to find index of %s\n", value);
-    //If this is the case, we just return the existing entry
-    return backupId;
+    return 11; //This means that we can't find it
+}
 
+void freePicnicTableR(struct pTableEntry* current) {
+    if (current == NULL) { //Base case
+        return;
+    }
+
+    freePicnicTableR(current->next);
+    free(current);
+    
+    current = NULL;
+}
+
+void freePicnicTable(PicnicTable* table) {
+    freePicnicTableR(table->head);
+    free(table);
+}
+
+void freeNeighbourhoodTableR(struct nTableEntry* current) {
+    if (current == NULL) { //Base case
+        return;
+    }
+
+    freeNeighbourhoodTableR(current->next);
+    free(current);
+    
+    current = NULL;
+}
+
+void freeNeighbourhoodTable(NeighbourhoodTable* table) {
+    freeNeighbourhoodTableR(table->head);
+    free(table);
 }

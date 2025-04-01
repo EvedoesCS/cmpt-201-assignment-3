@@ -34,4 +34,14 @@ Returns: void;
 **********************************************/
 void tokenize_string_impl(char *line, char *tokens[11]); 
 
+int getTableIndex(Table* table, char* value);
+
+void freePicnicTableR(struct pTableEntry* current);
+
+void freePicnicTable(PicnicTable* table);
+
+void freeNeighbourhoodTableR(struct nTableEntry* current);
+
+void freeNeighbourhoodTable(NeighbourhoodTable* table);
+
 #endif
