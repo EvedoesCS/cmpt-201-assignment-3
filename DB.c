@@ -221,8 +221,45 @@ char *db_insert(char *data, char *tableID, char *specifier){
 }
 
 char *db_update(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
+    //find tableid
+    
+    struct pTableEntry* temp = Db->picnicTableTable->head;
+    int tableId = atoi(tableID);
+
+    if (temp == NULL) {
+        //printf("PicnicTableTable has no entries!\n");
+        return "Failure";
+    }
+
+    while (temp != NULL) {
+        if (temp->tableId == tableId) {
+            //If we reach here, we have found our table ID
+            break;
+        }
+        temp = temp->next;
+    }
+    if (temp == NULL) {
+        //printf("tableID not found. Unable to edit entry.\n");
+        return "Failure";
+    }
+    
+    //Compare memberName so we can select the table to insert into
+    if (strcmp(specifier, "Table Type") == 0) {
+        //printf("T - Table Type Selected!\n");
+        temp->tableTypeId = getTableIndex(Db->tableTypeTable, data, temp->tableTypeId);
+        return "Success";
+
+    } else if (strcmp(specifier, "Surface Material") == 0) {
+        //printf("T - Surface Material Selected!\n");
+        temp->tableTypeId = getTableIndex(Db->surfaceMaterialTable, data, temp->tableTypeId);
+        return "Success";
+
+    } else if (strcmp(specifier, "Structural Material") == 0) {
+        //printf("T - Structural Material Selected!\n");
+        temp->tableTypeId = getTableIndex(Db->structuralMaterialTable, data, temp->tableTypeId);
+        return "Success";
+    }
+    return "Failure";
 }
 
 char *db_select(char *data, char *tableID, char *specifier){

@@ -67,3 +67,25 @@ void tokenize_string_impl(char *line, char *tokens[11]) {
     } 
 
 }
+
+
+int getTableIndex(Table* table, char* value, int backupId) { //Gets the index of a given string in a table's array
+    if (table == NULL) {
+        printf("Table is NULL! Unable to get index!\n");
+    }
+    
+    int i = 0;
+    while (table->data[i] != NULL) {
+        //printf("i = %d\n", i);
+        if (strcmp(value, table->data[i]) == 0) {
+            //printf("Found %s at index %d\n", value, i);
+            return i;
+        }
+        i++;
+    }
+    
+    printf("Unable to find index of %s\n", value);
+    //If this is the case, we just return the existing entry
+    return backupId;
+
+}
