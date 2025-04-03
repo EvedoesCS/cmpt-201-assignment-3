@@ -32,7 +32,7 @@ void prompt_file_path_impl(char *buffer) {
         // Ensures the file has a .csv extension;
         char extension[5];
         extension[4] = '\0';
-        for (int i = (strlen(filename) - 4), j = 0; i < strlen(filename) || j < 3; i++, j++) {
+        for (long unsigned int i = (strlen(filename) - 4), j = 0; i < strlen(filename) || j < 3; i++, j++) {
             extension[j] = filename[i]; 
         }
         if (strcmp(extension, ".csv") != 0) {
@@ -49,7 +49,7 @@ void tokenize_string_impl(char *line, char *tokens[11]) {
     int wrd_end = 0;
     int idx = 0;
 
-    for (int i = 0; i < strlen(line); i++) {
+    for (long unsigned int i = 0; i < strlen(line); i++) {
         if (line[i] == 44) {
             wrd_end = i;
             int wrd_size = (wrd_end - wrd_start);
@@ -66,4 +66,55 @@ void tokenize_string_impl(char *line, char *tokens[11]) {
         } 
     } 
 
+}
+
+
+int getTableIndex(Table* table, char* value) { //Gets the index of a given string in a table's array
+    if (table == NULL) {
+        printf("Table is NULL! Unable to get index!\n");
+    }
+    
+    int i = 0;
+    while (table->data[i] != NULL) {
+        //printf("i = %d\n", i);
+        if (strcmp(value, table->data[i]) == 0) {
+            //printf("Found %s at index %d\n", value, i);
+            return i;
+        }
+        i++;
+    }
+    
+    return 11; //This means that we can't find it
+}
+
+void freePicnicTableR(struct pTableEntry* current) {
+    if (current == NULL) { //Base case
+        return;
+    }
+
+    freePicnicTableR(current->next);
+    free(current);
+    
+    current = NULL;
+}
+
+void freePicnicTable(PicnicTable* table) {
+    freePicnicTableR(table->head);
+    free(table);
+}
+
+void freeNeighbourhoodTableR(struct nTableEntry* current) {
+    if (current == NULL) { //Base case
+        return;
+    }
+
+    freeNeighbourhoodTableR(current->next);
+    free(current);
+    
+    current = NULL;
+}
+
+void freeNeighbourhoodTable(NeighbourhoodTable* table) {
+    freeNeighbourhoodTableR(table->head);
+    free(table);
 }

@@ -14,6 +14,7 @@
 
 #ifndef DB_IMPL_H
 #define DB_IMPL_H
+#include "DB.h"
 
 /***************prompt_file_path****************
 Purpose: Prompts the user for the name of a file
@@ -33,5 +34,15 @@ Arguments: char *line -> the string to tokenize
 Returns: void;
 **********************************************/
 void tokenize_string_impl(char *line, char *tokens[11]); 
+
+int getTableIndex(Table* table, char* value);
+
+//void freePicnicTableR(struct pTableEntry* current);
+
+//void freePicnicTable(PicnicTable* table);
+
+//void freeNeighbourhoodTableR(struct nTableEntry* current);
+
+//void freeNeighbourhoodTable(NeighbourhoodTable* table);
 
 #endif

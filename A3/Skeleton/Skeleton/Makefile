@@ -1,22 +1,31 @@
-CC = gcc
-CFLAGS = -Wall -g -std=c99
-HEADER = DB.h DB_impl.h
+# Compiler and flags
+CC := gcc
+CFLAGS := -Wall -Wextra -std=c99 -MMD -MP
 
-dashboard: dashboard.o DB.o
-	$(CC) $(CFLAGS) dashboard.o DB.o -o dashboard
+# Target executable
+TARGET := dashboard
 
-dashboard: dashboard.o
-	$(CC) $(CFLAGS) dashboard.o -o dashboard
+# Source and object files
+SRCS := $(wildcard *.c)
+OBJS := $(SRCS:.c=.o)
+DEPS := $(OBJS:.o=.d)
 
+# Default target
+all: $(TARGET)
 
-%.o: %.c $(HEADER)
+# Link all object files into the executable
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) -o $(TARGET)
+
+# Compile source files into object files
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-valgrindDashBoard:
-	valgrind --leak-check=full ./dashboard
+# Include header dependencies
+-include $(DEPS)
 
+# Clean
 clean:
-	rm -f *.o dashboard
+	rm -f $(TARGET) $(OBJS) $(DEPS)
 
-tar:
-	tar -zcvf cmpt201_as_3_HL.tar.gz *.c *.h Makefile
+.PHONY: all clean
