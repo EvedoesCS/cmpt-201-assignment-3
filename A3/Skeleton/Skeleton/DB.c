@@ -15,6 +15,8 @@
 #include "DB_impl.h"  /* Import the private database header */
 
 DataBase *Db;
+#define MAX_SIZE 100
+
 
 /******************************************************************
 Author: Matthew Meyer Eve Leonard;
@@ -161,52 +163,52 @@ void importDB(char *filename) {
     }
 }
 
-//void exportDB(char *filename){
+// void exportDB(char *filename){
 //    FILE* fp = fopen(filename, "w");
-//
+
 //    if(fp == NULL)
 //    {
 //        printf("Cannot open %s\n", filename);
 //        return;
 //    }
-//
+
 //    /*Pointer to current node*/
 //    Table* current_node;
-//
+
 //    /*Exporting the Table Type Table of the linked list*/
 //    current_node = Db->tableTypeTable;
-//    
+   
 //    /*Iterating until the end of the linked list*/
 //    while(current_node != NULL)
 //    {
 //        fprintf(fp, "%d, %s\n", current_node->id, current_node->value);
 //        current_node = current_node->next;
 //    }
-//
+
 //    /*Exporting the Surface Material Table of the linked list*/
 //    current_node = Db->surfaceMaterialTable;
-//
+
 //    /*Iterating until the end of the linked list*/    
 //    while(current_node != NULL)
 //    {
 //        fprintf(fp, "%d, %s\n", current_node->id, current_node->value);
 //        current_node = current_node->next;
 //    }
-//
+
 //    /*Exporting the Structural Material Table of the linked list*/
 //    current_node = Db->structuralMaterialTable;
-//    
+   
 //    /*Iterating until the end of the linked list*/
 //    while(current_node != NULL)
 //    {
 //        fprintf(fp, "%d, %s\n", current_node->id, current_node->value);
 //        current_node = current_node->next;
 //    }
-//
+
 //    /*Close file*/
 //    fclose(fp);
 
-//}
+// }
 
 void db_query(statement stmt, char **data, int data_count, char *tableID, char *specifier, char **buffer){
     for (int i = 0; i < data_count; i++) {
@@ -214,35 +216,263 @@ void db_query(statement stmt, char **data, int data_count, char *tableID, char *
     } 
 }
 
+// Maria
+// char *db_insert(char* data, char* tableID, char* specifier)
+// {
+//     /*If data or table are invalid*/
+//     if (data == NULL || tableID == NULL)
+//     {
+//         return "Failure";
+//     }
 
-char *db_insert(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
-}
+//     /*Initializing pointer table*/
+//     Table* target_table = NULL;
 
+//     /*Checking tables are exactly the same*/
+//     if(strcmp(tableID, "tableTypeTable") == 0)
+//     {
+//         target_table = tableTypeTable;
+//     }
+//     else if(strcmp(tableID, "surfaceMaterialTable") == 0)
+//     {
+//         target_table = surfaceMaterialTable;
+//     }
+//     else if(strcmp(tableID, "structuralMaterialTable") == 0)
+//     {
+//         target_table = structuralMaterialTable;
+//     }
+//     else
+//     {
+//         /*If it does not match with any of the tables listed*/
+//         return "Failure";
+//     }
+
+//     /*Checking if the data already exists in the table*/
+//     for(int i = 0; i < INIT_SIZE; i++)
+//     {
+//         if(target_table->data[i] != NULL && strcmp(target_table->data[i], data) == 0)
+//         {
+//             return "Exists";
+//         }
+//     }
+
+
+//     /*Adding the data into the table*/
+//     for(int i = 0; i < INIT_SIZE; i++)
+//     {
+//         if(target_table->data[i] == NULL)
+//         {
+//             /*Inserting the data at the tail of the array*/
+//             target_table->data[i] = malloc(strlen(data) + 1);
+
+//             /*If malloc fails*/
+//             if(target_table->data[i] == NULL)
+//             {
+//                 return "Failure";
+//             }
+
+//             /*Copying the data into the empty space*/
+//             strcpy(target_table->data[i], data);
+//             return "Success";
+//         }
+//     }
+
+//     /*Table is full*/
+//     return "Failure";
+// }
+
+
+//Matthew
 char *db_update(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
+    //find tableid
+    
+    struct pTableEntry* temp = Db->picnicTableTable->head;
+    int tableId = atoi(tableID);
+
+    if (temp == NULL) {
+        return "Failure: picnicTableTable has no entries.";
+    }
+
+    while (temp != NULL) {
+        if (temp->tableTypeId == tableId) {
+            //If we reach here, we have found our table ID
+            break;
+        }
+        temp = temp->next;
+    }
+    if (temp == NULL) {
+        printf("tableID not found. Unable to edit entry.\n");
+        return "Failure: TableID not found.";
+    }
+    
+    //Compare memberName so we can select the table to insert into
+    if (strcmp(specifier, "Table Type") == 0) {
+        printf("T - Table Type Selected!\n");
+        int index = getTableIndex(Db->tableTypeTable, data);
+        if (index > 10) {
+            return "Failure: Could not find data in tableTypeTable.";
+        }
+        temp->tableTypeId = index;
+        return "Success\n";
+
+    } else if (strcmp(specifier, "Surface Material") == 0) {
+        printf("T - Surface Material Selected!\n");
+        int index = getTableIndex(Db->surfaceMaterialTable, data);
+        if (index > 10) {
+            return "Failure: Could not find data in surfaceMaterialTable.";
+        }
+        temp->tableTypeId = index;
+        return "Success";
+
+    } else if (strcmp(specifier, "Structural Material") == 0) {
+        printf("T - Structural Material Selected!\n");
+        int index = getTableIndex(Db->structuralMaterialTable, data);
+        if (index > 10) {
+            return "Failure: Could not find data in structuralMaterialTable.";
+        }
+        temp->tableTypeId = index;
+        return "Success";
+    }
+
+    return "Failure: Could not find given member.";
 }
 
-char *db_select(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
+// char *db_select(char *data, char *tableID, char *specifier){
+//     char *msg = "foo";
+//     return msg;
+// }
+
+
+// Maria
+// char* db_delete(char* data, char* tableID, char* specifier)
+// {
+//         if(tableID == NULL)
+//         {
+//             return "Failure";
+//         }
+    
+//         /*Initializing pointer table*/
+//         Table* target_table = NULL;
+    
+//         /*Checking tables are exactly the same*/
+//         if(strcmp(tableID, "tableTypeTable") == 0)
+//         {
+//             target_table = tableTypeTable;
+//         }
+//         else if(strcmp(tableID, "surfaceMaterialTable") == 0)
+//         {
+//             target_table = surfaceMaterialTable;
+//         }
+//         else if(strcmp(tableID, "structuralMaterialTable") == 0)
+//         {
+//             target_table = structuralMaterialTable;
+//         }
+//         else
+//         {
+//             /*If it does not match with any of the tables listed*/
+//             return "Failure";
+//         }
+    
+//         /*Deleting all the data from the table*/
+//         if(data == NULL)
+//         {
+//             for(int i = 0; i < INIT_SIZE; i++)
+//             {
+//                 if(target_table->data[i] != NULL)
+//                 {
+//                     /*Freeing all the data*/
+//                     free(target_table->data[i]);
+    
+//                     /*Empty table*/
+//                     target_table->data[i] = NULL;
+//                 }
+//             }
+//             return "Success";
+//         }
+    
+//         /*Deleting the specific data*/
+//         for(int i = 0; i < INIT_SIZE; i++)
+//         {
+//             /*Checking for the matched data*/
+//             if(target_table->data[i] != NULL && strcmp(target_table->data[i], data) == 0)
+//             {
+//                 /*Freeing the data*/
+//                 free(target_table->data[i]);
+    
+//                 /*Slot is empty*/
+//                 target_table->data[i] = NULL;
+//                 return "Success";
+//             }
+//         }
+//         return "Failure";
+// }
+
+
+// void freeDB() {
+//     free(Db->tableTypeTable);
+//     free(Db->surfaceMaterialTable);
+//     free(Db->structuralMaterialTable);
+//     freeNeighbourhoodTable(Db->neighborhoodTable);
+//     freePicnicTable(Db->picnicTableTable);
+//     free(Db);
+// }
+
+// /*int main(void) {
+//     db_create();
+
+//     char *filename = "./src/backend/dataset/PicnicTableSmall.csv"; 
+//     importDB(filename);
+
+//     printf("%s\n", Db->tableTypeTable->data[0]);
+//     printf("%s\n", Db->neighborhoodTable->head->next->next->next->value);
+
+//     return 0;
+// }
+// */
+
+/*
+void editTableEntry(int tableID, char* memberName, char* newValue){
+
+    //array to hold key
+    char* data[1];
+    char specifier[MAX_SIZE];
+    snprintf(specifier, sizeof(specifier),"tableID=%d", tableID);
+
+    char kvPair[MAX_SIZE];
+    //format string in kvPair as memberNmae=newValue
+    snprintf(kvPair, sizeof(kvPair), "%s=%s", memberName, newValue);
+    data[0] = kvPair; //asigning the keyvalue pair to first index of data
+
+    char* result = db_update(kvPair, "picnicTable", specifier);
+
+    if (strcmp(result, "Success")!= 0)
+    {
+        fprintf(stderr,"Failed to update table entry.\n");
+    }
+
+    
 }
+*/
 
-char *db_delete(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
-}
 
-int main(void) {
-    db_create();
-
-    char *filename = "./src/backend/dataset/PicnicTableSmall.csv"; 
-    importDB(filename);
-
-    printf("%s\n", Db->tableTypeTable->data[0]);
-    printf("%s\n", Db->neighborhoodTable->head->next->next->next->value);
-
-    return 0;
+void editTableEntry(int tableID, char *memberName, char *value) {
+    struct pTableEntry *curr = Db->picnicTableTable->head;
+    while (curr) {
+        if (curr->id == tableID) {
+            if (strcmp(memberName, "Table Type") == 0) {
+                init_lookupTable(Db->tableTypeTable, value);
+                curr->tableTypeId = getTableIndex(Db->tableTypeTable, value);
+            } 
+            else if (strcmp(memberName, "Surface Material") == 0) {
+                init_lookupTable(Db->surfaceMaterialTable, value);
+                curr->surfaceMatId = getTableIndex(Db->surfaceMaterialTable, value);
+            } 
+            else if (strcmp(memberName, "Structural Material") == 0) {
+                init_lookupTable(Db->structuralMaterialTable, value);
+                curr->structuralMatId = getTableIndex(Db->structuralMaterialTable, value);
+            }
+            return;
+        }
+        curr = curr->next;
+    }
 }

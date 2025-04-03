@@ -25,31 +25,41 @@
  */
 #define INIT_SIZE 5  
 
-typedef struct table {
-    int count;
-    int id;
-    char *value;
-    struct table *next;
+typedef char *(*statement)(char *, char *, char*);
+
+typedef struct table{
+    char *data[10];
 }Table;
 
-typedef struct {
+struct nTableEntry {
+    char *code;
+    char *value;
+    struct nTableEntry *next; 
+};
+
+typedef struct nTable {
+    struct nTableEntry *head;
+    int size;
+}NeighbourhoodTable;
+
+struct pTableEntry {
     int id;
-    char *name;
+    int tableTypeId;
+    int surfaceMatId;
+    int structuralMatId;
+    char *street_ave;
+    struct nTableEntry *neighbourhoodId;
     char *ward;
     char *latitude;
     char *longitude;
     char *location;
-}NeighbourhoodTable;
+    struct pTableEntry *next; 
+};
 
-typedef struct {
-    int id;
-    char *table_type;
-    char *surface_material;
-    char *structural_material;
-    char *street_ave;
-    NeighbourhoodTable *f_key_neighborhood;
+typedef struct pTable {
+    struct pTableEntry *head;
+    int size;
 }PicnicTable;
-
 
 /*
  * You may change the internal details of the struct below,
@@ -72,32 +82,33 @@ extern DataBase *Db;
 
 /**********************Backend_Functions*****************************/
 
-
+void db_create();
 
 /***************************import_db**********************************
+Author: Eve Leonard
 Purpose: Imports CSV data from a file into a db struct;
-Arguments: filename -> file to read from, db -> db struct to store data
-in;
+Arguments: filename -> file to read from
 Returns: void
 **********************************************************************/
-void importDB(char *filename, DataBase db);
+void importDB(char *filename);
 
 
 /***************************export_db**********************************
+Author: Maria Reyes 
 Purpose: Compiles a db struct into lines in CSV format to be written into
 a file;
-Arguments: filename -> file to write to, db file to get CSV data from;
+Arguments: filename -> file to write to;
 Returns: void
 **********************************************************************/
-void exportDB(char *filename, DataBase db);
+void exportDB(char *filename);
 
 /***************************db_query**********************************
+Author: Eve Leonard
 Purpose: Parses db commands and calls appropriate helper functions to 
 perfrom CRUD (Insert, Select, Update, Delete) functionalities on a db 
 struct;
 Arguments: 
-    command -> Which helper funciton to call,
-    Either: "INSERT", "SELECT", "UPDATE", "DELETE",
+    stmt -> function pointer which calls the desired operation;
     data -> array of string which need to be added, removed, or selected 
     from the db struct. Expected to follow KV pair format 
     Ex. ["Surface Material=foo", "Ward=bar"]
@@ -112,18 +123,20 @@ Arguments:
 Returns: A string array with the requested data sorted in the same order
 as the corresponding items in data were proccessed.
 **********************************************************************/
-void db_query(char *command, char **data, int data_count, char *tableID, char *specifier, char **buffer);
+void db_query(statement stmt, char **data, int data_count, char *tableID, char *specifier, char **buffer);
 
 /***************************db_insert**********************************
+Author: Maria Reyes
 Purpose: Insets a new entry into a table in the db struct; 
 Arguments: data -> the data to insert, tableID -> the id of the table
 to insert into;
 Returns: String with a success or failure message
 **********************************************************************/
-char *db_insert(char *data, char *tableID);
+char *db_insert(char *data, char *tableID, char *specifier);
 
 
 /***************************db_update**********************************
+Author: Matthew Meyer
 Purpose: Updates an Item in the db struct in the specified table.
 Arguments: 
     data -> the item(s) to update
@@ -132,9 +145,10 @@ Arguments:
     in tables.
 Returns: String with a success or failure message
 **********************************************************************/
-char *db_update(char *data, char *tableID, char *specifier);
+//char *db_update(char *data, char *tableID, char *specifier);
 
 /***************************db_select**********************************
+Author: Eve Leonard
 Purpose: Finds the requested data in the db struct and returns it in the 
 order it was requested in.
 Arguments: 
@@ -147,6 +161,7 @@ Returns: String with a success or failure message
 char *db_select(char *data, char *tableID, char *specifier);
 
 /***************************db_delete**********************************
+Author: Maria Reyes
 Purpose: Removes an item from the db and frees all memory associated 
 with it. 
 Arguments: 
@@ -216,7 +231,6 @@ void reportByWard();
  * Frees all dynamic memory associated with each table upon exit. 
  */
 void freeDB();
-
 
 
 #endif

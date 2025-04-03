@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h> //use for atoi()
 #include <string.h> //used for strlen 
+#include "DB_impl.h"
 #include "DB.h"
 //#include "export.c"//TOBEREMOVED - move it to db.c
 //#include "editTableEntry.c"//TOBEREMOVED - move to db.c
@@ -55,49 +56,43 @@ Purpose: displaying menu for memberName options and prompt user input to be used
 Arguments: void
 Returns: memberName string based on user input
 **********************************************************************/
-//char* memberNameforCountEntries(){
-//     //string array of memberName options
-//     char* options[6]= {"Table Type", "Surface Material", "Structural Material","Neighborhood ID","Neighborhood Name", "Ward"};
-//     printf("Select member name that need to be counted: \n");
-//     //loop through the array to display memberName menu
-//     for (int i =0; i<6; i++){
-//         printf("%d. %s\n", i+1, options[i]);
-//     }
+char* memberNameforCountEntries(){
+    //string array of memberName options
+    char* options[6]= {"Table Type", "Surface Material", "Structural Material","Neighborhood ID","Neighborhood Name", "Ward"};
+    printf("Select member name that need to be counted: \n");
+    //loop through the array to display memberName menu
+    for (int i =0; i<6; i++){
+        printf("%d. %s\n", i+1, options[i]);
+    }
     
-//     char memberName[INPUT_LEN];
-//     int select = 0;
+    int select = 0;
 
-//     while (select<1 || select >6){
-//         //when input successfully, the input will be cast to be an int with under select variable
-//         if (fgets(memberName, INPUT_LEN, stdin) != NULL){
-//             select = atoi(memberName);
-//         }
-//         //when input is NULL, display error message and prompt user input again
-//         else{
-//             fprintf(stderr, "Please only choose one number from 1 to 7.\n");
-//         }
+    while (select<1 || select >6){
+        scanf("%d", &select);
+        getchar(); // consume newline
+        
 
-//         //different return strings based on user input
-//         if (select >= 1 && select <= 6){
-//             return (options[select-1]);
-//         }
+        //different return strings based on user input
+        if (select >= 1 && select <= 6){
+            return (options[select-1]);
+        }
        
-//         //when input is not within the menu option, print error message and ask for input again
-//         else{
-//             printf("Selection was invalid, please select a number from 1 to 7.\n");
-//             //fgets(memberName, INPUT_LEN, stdin);  
-//             //select = atoi(memberName);
+        //when input is not within the menu option, print error message and ask for input again
+        else{
+            printf("Selection was invalid, please select a number from 1 to 7.\n");
               
-//         }
-//     return NULL;       
-// }
+        }
+    }
+    return NULL;       
+}
+
 
 /*------------------------------------------------------------------------
 Author: Helen Ly
 Purpose: displaying menu for memberName options and prompt user input
          to be used in option 4 of main menu - sort member
 Arguments: void
-Returns: memberName string based on user input
+Returns: memberName string based on user input;
 ------------------------------------------------------------------------*/
 
 char* memberNameforSortbyMember(){
@@ -106,14 +101,13 @@ char* memberNameforSortbyMember(){
     for (int i = 0; i < 5; i++) {
         printf("%d. %s\n", i + 1, options[i]);
     }
+    printf("\n");
 
-    char memberName[INPUT_LEN];
     int select = 0;
-
     while (select < 1 || select > 5) {
-        if (fgets(memberName, INPUT_LEN, stdin) != NULL) {
-            select = atoi(memberName);
-        }
+        scanf("%d", &select);
+        getchar(); // consume newline
+        
         if (select >= 1 && select <= 5) {
             return options[select - 1];
         } else {
@@ -135,58 +129,38 @@ char* memberNameforEditEntryOptions(){
     char* options[3] = {"Table Type", "Surface Material", "Structural Material"};
     printf("Select the memberName that can be modified: \n");
     for (int i =0; i<3;i++){
-        printf("%d. %s", i+1, options[i]);
+        printf("%d. %s\n", i+1, options[i]);
     }
     int select;
     //if user input NULL or more than a number, print error message
-
-    if (scanf ("%d", &select) !=1 ||select <1 || select >3){
+    while (scanf ("%d", &select) !=1 ||select <1 || select >3){
         printf ("The selection is invalid. Choose a number from 1 to 3.\n");
+        while (getchar() != '\n');
     }
-    if (select>=1 && select <= 3){
+        getchar();
         return options[select-1];
-    }
-    return NULL;
-    
 }
-
 /*
 //function prototypes
 void countEntriesOptions(); 
 void sortByOptions();
-void editEntryOptions();
 */
+void editEntryOptions();
 
 
 // use as condition to Prevent operations until the database is imported 
 int DatabaseImported = 0; //Database hasn't been imported
 
 
-int main() {
+int main(){
 
     int cmd = 0;
 
-    char input[INPUT_LEN];
-
-    while (cmd != 7){ //the program keep running until the user choose option 7
+    //the program keep running until the user choose option 7
+    while (cmd != 7){ 
         displayMenuOptions();
-        if (fgets(input, INPUT_LEN, stdin) != NULL){
-            for (int i=0; i<INPUT_LEN; i++){
-                if (input[i] == '\n'){
-                    input[i] = '\0';
-                    break;
-                }
-            }
-            while (strlen(input) != 1|| input[0]<'1'|| input[0]>'7'){
-                fprintf(stderr, "Please only choose one number from 1 to 7.");
-                continue;
-            }
-            cmd = atoi(input);
-        }
-        else{
-            fprintf(stderr,"No input provided, the program is terminated.");
-            exit(0);
-        }
+        scanf("%d", &cmd);
+        getchar(); // consume newline
 
         //prevent operations until the database is imported
         if (cmd != 1 && DatabaseImported == 0){
@@ -196,62 +170,70 @@ int main() {
 
         if (cmd == 1){
 
-            char filename[FILENAME_LEN];
+            char filename[FILENAME_LEN] = {0};
             printf("Enter the filename to be imported: \n");
-            if (fgets(filename, sizeof(filename), stdin) != NULL){
-                printf("Did it go here?");
-                filename[strcspn(filename, "\n")] = '\0';
-/*
-                for (int i=0; i<FILENAME_LEN; i++){
-                    if (filename[i] == '\n'){
-                        filename[i] = '\0';
-                        break;
-                    }
-                }*/
-                printf("or here?");
+                prompt_file_path_impl(filename);
+                db_create();
                 importDB(filename);
                 DatabaseImported = 1; //Update when database is imported sucessfully
                 printf("File %s has been imported.\n", filename);
-            }
+                
+                
+            /*
             else {
+                printf("Nothing was input.\n");
                 exit(0);
             }
+            */
         }
         
-        /*else if (cmd == 2){
+        else if (cmd == 2){
             char filename[FILENAME_LEN];
             printf("Enter the filename to be imported: ");
-            if (fgets(filename, FILENAME_LEN, stdin) != NULL){
-                exportDB(filename);
+            prompt_file_path_impl(filename);
+            printf("Need export here.\n");
+                //exportDB(filename);
                 printf("File %s has been exported", filename);
+                
 
-            }
+            /*
             else {
                 exit(0);
-            }
+            }*/
         }
-        */
+    
 
-        /*
+        
         else if(cmd == 3){
-            countEntriesOptions();
+            printf("Need count Entry here.\n");
+            //countEntriesOptions();
         }
 
         else if (cmd ==4){
             char* memberName = memberNameforSortbyMember();
-            sortByMember (memberName);
+            printf("memberName is %s\n",memberName);
+            printf("Need sort by member function.\n");
+            //sortByMember (memberName);
         }
 
         else if (cmd == 5){
+            if (DatabaseImported != 1){
+                fprintf(stderr, "Database need to be imported.\n");
+                continue;
+            }
+            printf("Need editEntry here.\n");
             editEntryOptions();
         }
 
         else if (cmd==6){
-            sortByOptions();
+            printf("need sort function here.\n");
+            //sortByOptions();
         }
-        */
+        //cmd = 0;
+        
     }
     return 0;
+
 
 }
 
@@ -330,28 +312,22 @@ Purpose: get user input for tableID, memberName and newValue as input
 Arguments: void
 Returns: void
 **********************************************************************/
-/*
-void editEntryOptions(){
 
-    char tableID[INPUT_LEN];
+void editEntryOptions(){
+    int tableID;
     printf("Enter table ID: ");
-    fgets(tableID, INPUT_LEN, stdin);
-    for (int i=0; i<INPUT_LEN; i++){
-        if (tableID[i] == '\n'){ 
-            tableID[i] = '\0';
-        }
-    }
+    scanf("%d", &tableID);
+    getchar(); // consume newline
 
     char* memberName = memberNameforEditEntryOptions();
     if (memberName == NULL){
-        fprintf(stderr, "No valid member name selected. Back to main menu.\n");
+        fprintf(stderr, "No valid member name selected.\n");
         return ;
     }
 
     char newValue[MAX_LEN];
     printf("Enter the new value: ");
     fgets(newValue, MAX_LEN, stdin);
-
     //remove newline char
     for (int i=0; i<MAX_LEN; i++){
         if (newValue[i] == '\n'){ 
@@ -359,7 +335,7 @@ void editEntryOptions(){
         }
     }
 
-    editTableEntry(atoi(tableID), memberName, newValue);
+    editTableEntry(tableID, memberName, newValue);
+    printf("Table updated sucessfully.\n");
 
 }
-    */
