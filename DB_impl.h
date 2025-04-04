@@ -15,6 +15,8 @@
 #ifndef DB_IMPL_H
 #define DB_IMPL_H
 
+#include "DB.h"
+
 /***************prompt_file_path****************
 Purpose: Prompts the user for the name of a file
 to read/write csv data from/to. Returns an error
@@ -33,6 +35,8 @@ Arguments: char *line -> the string to tokenize
 Returns: void;
 **********************************************/
 void tokenize_string_impl(char *line, char *tokens[11]); 
+
+void detokenize_impl(struct pTableEntry *curr, char line[512]); 
 
 int getTableIndex(Table* table, char* value);
 
