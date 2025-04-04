@@ -168,6 +168,7 @@ void importDB(char *filename) {
         new_entry->tableTypeIdx = getTableIndex(Db->tableTypeTable, tokens[1]);
         new_entry->surfaceMatIdx = getTableIndex(Db->surfaceMaterialTable, tokens[2]);
         new_entry->structuralMatIdx = getTableIndex(Db->structuralMaterialTable, tokens[3]);
+
         new_entry->street_ave = tokens[4];
 
         struct nTableEntry *nCurr = Db->neighborhoodTable->head;
@@ -286,9 +287,16 @@ char *db_update(char *data, char *tableID, char *specifier){
 }
 
 void freeDB() {
+    for (int i = 0; i < 10; i++) {
+        free(Db->tableTypeTable->data[i]);
+        free(Db->surfaceMaterialTable->data[i]);
+        free(Db->structuralMaterialTable->data[i]);
+    }
+
     free(Db->tableTypeTable);
     free(Db->surfaceMaterialTable);
     free(Db->structuralMaterialTable);
+
     freeNeighbourhoodTable(Db->neighborhoodTable);
     freePicnicTable(Db->picnicTableTable);
     free(Db);
@@ -297,7 +305,7 @@ void freeDB() {
 int main(void) {
     db_create();
 
-    char *filename = "./src/backend/dataset/PicnicTable.csv"; 
+    char *filename = "./src/backend/dataset/PicnicTableSmall.csv"; 
     importDB(filename);
 
     exportDB("out.csv");

@@ -131,6 +131,20 @@ void freePicnicTableR(struct pTableEntry* current) {
     }
 
     freePicnicTableR(current->next);
+
+    free(current->id);
+    current->id = NULL;
+    free(current->street_ave);
+    current->street_ave = NULL;
+    free(current->ward);
+    current->ward = NULL;
+    free(current->latitude);
+    current->latitude = NULL;
+    free(current->longitude);
+    current->longitude = NULL;
+    free(current->location);
+    current->location = NULL;
+
     free(current);
     
     current = NULL;
@@ -147,6 +161,8 @@ void freeNeighbourhoodTableR(struct nTableEntry* current) {
     }
 
     freeNeighbourhoodTableR(current->next);
+    free(current->code);
+    free(current->value);
     free(current);
     
     current = NULL;
