@@ -457,8 +457,6 @@ char *db_update(char *data, char *tableID, char *specifier){
 
 
 
-
-
 /*********************************************************************
 Author: Helen Ly
 Purpose: find the entry with a specific TableID and change the value of
@@ -472,11 +470,10 @@ Returns: void
 void editTableEntry(int tableID, char *memberName, char *value) {
     char tableIdStr[10];
     snprintf(tableIdStr, sizeof(tableIdStr),"%d", tableID);
-    char *result = db_update(value, tableIdStr, memberName);
+    char* result = db_update(value, tableIdStr, memberName);
 
     if (strncmp(result, "Success", 7) == 0){
         printf("Entry updated sucessfully.\n");
-
     }
     else{
         printf("Failed to update %s.\n", result);

@@ -1,9 +1,8 @@
 /*
  * dashboard.c
  *
- * TODO: Provide a high-level description of what is contained
- * in this file.
- *
+ * TODO: an interactive dashboard for user to input options, dashboard prevents operations until the database is imported
+ * 
  * Author: Helen Ly
  * Lab instructor: Dhara Wagh
  * Lecture instructor: Ardy RD
@@ -14,15 +13,11 @@
 */
 
 
-//You may include other original headers as you see fit
-
 #include <stdio.h>
 #include <stdlib.h> //use for atoi()
 #include <string.h> //used for strlen 
 #include "DB_impl.h"
 #include "DB.h"
-//#include "export.c"//TOBEREMOVED - move it to db.c
-//#include "editTableEntry.c"//TOBEREMOVED - move to db.c
 
 
 #define INPUT_LEN 10 //maxlen when selecting menu options
