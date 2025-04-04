@@ -43,7 +43,7 @@ typedef struct nTable {
 }NeighbourhoodTable;
 
 struct pTableEntry {
-    int id;
+    char* id;
     int tableTypeId;
     int surfaceMatId;
     int structuralMatId;
@@ -236,5 +236,6 @@ void freeDB();
 
 void init_lookupTable(Table *table, char *value);
 
+void reportByWard();
 
 #endif

@@ -1,31 +1,25 @@
-# Compiler and flags
-CC := gcc
-CFLAGS := -Wall -Wextra -std=c99 -MMD -MP
 
-# Target executable
-TARGET := dashboard
+#/*****************************************
+# * Author: Eve Leonard 3148599
+# * Lab instructor: Dhara Wagh 
+# * Lecture instructor: Abdullah Mohiuddin
+#*****************************************/
 
-# Source and object files
-SRCS := $(wildcard *.c)
-OBJS := $(SRCS:.c=.o)
-DEPS := $(OBJS:.o=.d)
+CC=gcc
+CFLAGS= -Wall -g -std=c99
+HEADERS = DB.h DB_impl.h
 
-# Default target
-all: $(TARGET)
+dashboard: dashboard.o DB.o DB_impl.o
+	$(CC) $(CFLAGS) $^ -o $@
 
-# Link all object files into the executable
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+DB: DB.o DB_impl.o
+	$(CC) $(CFLAGS) $^ -o $@
 
-# Compile source files into object files
-%.o: %.c
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Include header dependencies
--include $(DEPS)
-
-# Clean
 clean:
-	rm -f $(TARGET) $(OBJS) $(DEPS)
+	rm *.o
 
-.PHONY: all clean
+tar:
+	tar -zcvf cmpt201_eehmm_milestone1.tar.gz DB.h DB.c makefile CMPT201_A3_DashboardPlanning.pdf

@@ -143,8 +143,9 @@ char* memberNameforEditEntryOptions(){
 /*
 //function prototypes
 void countEntriesOptions(); 
-void sortByOptions();
 */
+
+void reportOptions();
 void editEntryOptions();
 
 
@@ -219,8 +220,7 @@ int main(){
         }
 
         else if (cmd==6){
-            printf("need sort function here.\n");
-            //sortByOptions();
+            reportOptions();
         }
         //cmd = 0;
         
@@ -269,14 +269,15 @@ Purpose: get user input for report type options, then generate requested report
 Arguments: void
 Returns: void
 **********************************************************************/
-/*void sortByOptions(){
+void reportOptions(){
 
     //display menu by looping through the report type options
     char* options[2] = {"Report By Ward", "Report By Neighborhood ID"};
     printf("Select the Report Type: \n");
     for (int i =0; i<2;i++){
-        printf("%d. %s", i+1, options[i]);
+        printf("%d. %s\n", i+1, options[i]);
     }
+    printf("\n");
 
 
     int select;
@@ -288,15 +289,20 @@ Returns: void
     
     //Otherwise, call the coresponding report as per user input
     if (select == 1){
-        reportByWard();
+        printf("Did it go here to Ward?\n");
+        reportByWard(); 
+        printf("The report by ward has been printed.\n");
     }
     else if (select == 2){
+        printf("Did it go here to Neighbor?");
         reportByNeighbourhood();
+        printf("The report by neighborhood has been printed.\n");
+
     }
     else{
         printf ("Selection is invalid. Only choose 1 or 2.\n");
     }
-}*/
+}
 
 /*********************************************************************
 Author: Helen Ly

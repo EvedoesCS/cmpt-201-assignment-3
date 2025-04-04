@@ -439,6 +439,9 @@ char *db_update(char *data, char *tableID, char *specifier){
 //     free(Db);
 // }
 
+
+
+
 // /*int main(void) {
 //     db_create();
 
@@ -455,25 +458,60 @@ char *db_update(char *data, char *tableID, char *specifier){
 
 
 
-//Helen
+
+/*********************************************************************
+Author: Helen Ly
+Purpose: find the entry with a specific TableID and change the value of
+        of the memberName to a new value
+Arguments: 
+        TableID: the table ID number
+        memberName: the memberName that its value need to be changes
+        value: new value to be updated
+Returns: void
+**********************************************************************/
 void editTableEntry(int tableID, char *memberName, char *value) {
-    struct pTableEntry *curr = Db->picnicTableTable->head;
-    while (curr != NULL) {
-        if (curr->id == tableID) {
-            if (strcmp(memberName, "Table Type") == 0) {
-                init_lookupTable(Db->tableTypeTable, value);
-                curr->tableTypeId = getTableIndex(Db->tableTypeTable, value);
-            } 
-            else if (strcmp(memberName, "Surface Material") == 0) {
-                init_lookupTable(Db->surfaceMaterialTable, value);
-                curr->surfaceMatId = getTableIndex(Db->surfaceMaterialTable, value);
-            } 
-            else if (strcmp(memberName, "Structural Material") == 0) {
-                init_lookupTable(Db->structuralMaterialTable, value);
-                curr->structuralMatId = getTableIndex(Db->structuralMaterialTable, value);
-            }
-            return;
-        }
-        curr = curr->next;
+    char tableIdStr[10];
+    snprintf(tableIdStr, sizeof(tableIdStr),"%d", tableID);
+    char *result = db_update(value, tableIdStr, memberName);
+
+    if (strncmp(result, "Success", 7) == 0){
+        printf("Entry updated sucessfully.\n");
+
+    }
+    else{
+        printf("Failed to update %s.\n", result);
     }
 }
+
+/*********************************************************************
+Author: Helen Ly
+Purpose: produces a listing of picnic tables grouped by wards in
+        ascending order
+Arguments: void
+Returns: void
+**********************************************************************/
+
+ void reportByWard(){
+    struct pTableEntry* curr = Db->picnicTableTable->head;
+    //sortByMember(curr->ward)
+    while (curr != NULL){
+        printf("Ward: %s  -  TableID: %s \n", curr->ward, curr->id);
+        curr = curr -> next;
+    }
+ }
+
+
+/*********************************************************************
+Author: Helen Ly
+Purpose: produces a listing of picnic tables grouped by neighborhoodID in
+        ascending order
+Arguments: void
+Returns: void
+**********************************************************************/
+ void reportByNeighbourhood(){
+    //sortByMember(curr->neighborhoodId)
+    struct pTableEntry* curr= Db->picnicTableTable->head;
+    while(curr != NULL){
+        printf("Neighborhood: %s  -  TableID: %s \n", curr->neighbourhoodId->value, curr->id);
+    }
+ }
