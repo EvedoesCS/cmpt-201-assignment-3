@@ -220,6 +220,17 @@ char *db_insert(char *data, char *tableID, char *specifier){
     return msg;
 }
 
+
+/******************************************************************
+Author: Matthew Meyer;
+Purpose: Updates one of three specific members of the PicnicTable within
+the global DataBase Db
+Arguments: char* data -> the data to update; char* tableID -> the unique
+ID number of the PicnicTableEntry; char* specifier -> the member of the
+PicnicTable to be updated. Acceptable specifiers are as follows:
+"Table Type", "Surface Material", "Structural Material";
+Returns: A message indicating Failure or Success
+ *******************************************************************/
 char *db_update(char *data, char *tableID, char *specifier){
     //find tableid
     
@@ -284,6 +295,13 @@ char *db_delete(char *data, char *tableID, char *specifier){
     return msg;
 }
 
+/******************************************************************
+Author: Matthew Meyer;
+Purpose: Frees the global DataBase Db in it's entirety with the help
+of freeNeighbourhoodTable and freePicnicTable
+Arguments: None
+Returns: void
+ *******************************************************************/
 void freeDB() {
     free(Db->tableTypeTable);
     free(Db->surfaceMaterialTable);
