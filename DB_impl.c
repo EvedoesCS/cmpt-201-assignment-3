@@ -48,24 +48,62 @@ void tokenize_string_impl(char *line, char *tokens[11]) {
     int wrd_start = 0;
     int wrd_end = 0;
     int idx = 0;
+    int comma_count = 0;
 
     for (int i = 0; i < strlen(line); i++) {
         if (line[i] == 44) {
-            wrd_end = i;
-            int wrd_size = (wrd_end - wrd_start);
+            comma_count++;
+            if (comma_count != 11) {
+                wrd_end = i;
+                int wrd_size = (wrd_end - wrd_start);
 
-            // Malloc Space for new word and copy data;
-            char *new_word = malloc(sizeof(char) * (wrd_size) + 1);
-            strncpy(new_word, (line + wrd_start), wrd_size);
-            new_word[wrd_size] = '\0';
+                // Malloc Space for new word and copy data;
+                char *new_word = malloc(sizeof(char) * (wrd_size) + 1);
+                strncpy(new_word, (line + wrd_start), wrd_size);
+                new_word[wrd_size] = '\0';
 
-            tokens[idx] = new_word;
-            idx++;
+                tokens[idx] = new_word;
+                idx++;
 
-            wrd_start = wrd_end + 1;
+                wrd_start = wrd_end + 1;
+            }
         } 
+        wrd_end = strlen(line);
+        int wrd_size = (wrd_end - wrd_start);
+
+        // Malloc Space for new word and copy data;
+        char *new_word = malloc(sizeof(char) * (wrd_size) + 1);
+        strncpy(new_word, (line + wrd_start), wrd_size);
+        new_word[wrd_size] = '\0';
+
+        tokens[idx] = new_word;
+
     } 
 
+}
+
+void detokenize_impl(struct pTableEntry *curr, char line[512]) {
+    strcat(line, curr->id);
+    strcat(line, ",");
+    strcat(line, Db->tableTypeTable->data[curr->tableTypeIdx]);
+    strcat(line, ",");
+    strcat(line, Db->surfaceMaterialTable->data[curr->surfaceMatIdx]);
+    strcat(line, ",");
+    strcat(line, Db->structuralMaterialTable->data[curr->structuralMatIdx]);
+    strcat(line, ",");
+    strcat(line, curr->street_ave);
+    strcat(line, ",");
+    strcat(line, curr->neighbourhoodId->code);
+    strcat(line, ",");
+    strcat(line, curr->neighbourhoodId->value);
+    strcat(line, ",");
+    strcat(line, curr->ward);
+    strcat(line, ",");
+    strcat(line, curr->latitude);
+    strcat(line, ",");
+    strcat(line, curr->longitude);
+    strcat(line, ",");
+    strcat(line, curr->location);
 }
 
 

@@ -54,6 +54,8 @@ void db_create() {
         printf("ERROR: Failed to initialize a table\n");
         return;
     }
+    Db->picnicTableTable->size = 0;
+    Db->picnicTableTable->head = NULL;
 
     for (int i = 0; i < 10; i++) {
         Db->tableTypeTable->data[i] = NULL;
@@ -107,7 +109,6 @@ void init_nTable(NeighbourhoodTable *nTable, char *code, char *value) {
     if (nTable->head != NULL) {
         while (curr->next != NULL) {
             if (strcmp(curr->next->code, code) == 0) {
-                printf("Ommiting duplicate\n");
                 return;
             }
             curr = curr->next;
@@ -126,6 +127,8 @@ void init_nTable(NeighbourhoodTable *nTable, char *code, char *value) {
         return;
     }
     curr->next = new_node; 
+
+    nTable->size++;
 }
 
 /******************************************************************
@@ -158,67 +161,75 @@ void importDB(char *filename) {
         // Init the neighbourhood table with data;
         init_nTable(Db->neighborhoodTable, tokens[5], tokens[6]);
         Db->neighborhoodTable->size++;
+
+        struct pTableEntry *new_entry = malloc(sizeof(struct pTableEntry));
+        new_entry->tableId = Db->picnicTableTable->size;
+        new_entry->id = tokens[0];
+        new_entry->tableTypeIdx = getTableIndex(Db->tableTypeTable, tokens[1]);
+        new_entry->surfaceMatIdx = getTableIndex(Db->surfaceMaterialTable, tokens[2]);
+        new_entry->structuralMatIdx = getTableIndex(Db->structuralMaterialTable, tokens[3]);
+        new_entry->street_ave = tokens[4];
+
+        struct nTableEntry *nCurr = Db->neighborhoodTable->head;
+        while (nCurr != NULL) {
+            if (strcmp(nCurr->code, tokens[5]) == 0) {
+                new_entry->neighbourhoodId = nCurr;
+            }
+            nCurr = nCurr->next;
+        }
+
+        new_entry->ward = tokens[7];
+        new_entry->latitude = tokens[8];
+        new_entry->longitude = tokens[9];
+
+        new_entry->location = tokens[10];
+        
+        new_entry->next = NULL;
+
+        // Insert new_entry into the DB;
+        if (Db->picnicTableTable->head == NULL ) {
+            Db->picnicTableTable->head = new_entry;
+        }
+        else {
+            struct pTableEntry *curr = Db->picnicTableTable->head;
+            while (curr->next != NULL) {
+                curr = curr->next;
+            }
+            curr->next = new_entry;
+        }
+
+        Db->picnicTableTable->size++;
     }
 }
 
-//void exportDB(char *filename){
-//    FILE* fp = fopen(filename, "w");
-//
-//    if(fp == NULL)
-//    {
-//        printf("Cannot open %s\n", filename);
-//        return;
-//    }
-//
-//    /*Pointer to current node*/
-//    Table* current_node;
-//
-//    /*Exporting the Table Type Table of the linked list*/
-//    current_node = Db->tableTypeTable;
-//    
-//    /*Iterating until the end of the linked list*/
-//    while(current_node != NULL)
-//    {
-//        fprintf(fp, "%d, %s\n", current_node->id, current_node->value);
-//        current_node = current_node->next;
-//    }
-//
-//    /*Exporting the Surface Material Table of the linked list*/
-//    current_node = Db->surfaceMaterialTable;
-//
-//    /*Iterating until the end of the linked list*/    
-//    while(current_node != NULL)
-//    {
-//        fprintf(fp, "%d, %s\n", current_node->id, current_node->value);
-//        current_node = current_node->next;
-//    }
-//
-//    /*Exporting the Structural Material Table of the linked list*/
-//    current_node = Db->structuralMaterialTable;
-//    
-//    /*Iterating until the end of the linked list*/
-//    while(current_node != NULL)
-//    {
-//        fprintf(fp, "%d, %s\n", current_node->id, current_node->value);
-//        current_node = current_node->next;
-//    }
-//
-//    /*Close file*/
-//    fclose(fp);
+void exportDB(char *filename){
+    FILE* fp = fopen(filename, "w");
 
-//}
+    if(fp == NULL)
+    {
+        printf("Cannot open %s\n", filename);
+        return;
+    }
 
-void db_query(statement stmt, char **data, int data_count, char *tableID, char *specifier, char **buffer){
-    for (int i = 0; i < data_count; i++) {
-        buffer[i] = stmt(data[i], tableID, specifier);
-    } 
+    fprintf(fp, "Id,Table Type,Surface Material,Structural Material,Street / Avenue,Neighbourhood Id,Neighbourhood Name,Ward,Latitude,Longitude,Location\n");
+
+    struct pTableEntry *curr = Db->picnicTableTable->head; 
+
+    while (curr != NULL) {
+        char line[512] = {0};
+        detokenize_impl(curr, line);
+        fputs(line, fp);
+
+        curr = curr->next;
+    }
+
+
+
+    /*Close file*/
+    fclose(fp);
+
 }
 
-
-char *db_insert(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
-}
 
 char *db_update(char *data, char *tableID, char *specifier){
     //find tableid
@@ -249,7 +260,7 @@ char *db_update(char *data, char *tableID, char *specifier){
         if (index > 10) {
             return "Failure: Could not find data in tableTypeTable.";
         }
-        temp->tableTypeId = index;
+        temp->tableTypeIdx = index;
         return "Success\n";
 
     } else if (strcmp(specifier, "Surface Material") == 0) {
@@ -258,7 +269,7 @@ char *db_update(char *data, char *tableID, char *specifier){
         if (index > 10) {
             return "Failure: Could not find data in surfaceMaterialTable.";
         }
-        temp->tableTypeId = index;
+        temp->tableTypeIdx = index;
         return "Success";
 
     } else if (strcmp(specifier, "Structural Material") == 0) {
@@ -267,21 +278,11 @@ char *db_update(char *data, char *tableID, char *specifier){
         if (index > 10) {
             return "Failure: Could not find data in structuralMaterialTable.";
         }
-        temp->tableTypeId = index;
+        temp->tableTypeIdx = index;
         return "Success";
     }
 
     return "Failure: Could not find given member.";
-}
-
-char *db_select(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
-}
-
-char *db_delete(char *data, char *tableID, char *specifier){
-    char *msg = "foo";
-    return msg;
 }
 
 void freeDB() {
@@ -296,11 +297,12 @@ void freeDB() {
 int main(void) {
     db_create();
 
-    char *filename = "./src/backend/dataset/PicnicTableSmall.csv"; 
+    char *filename = "./src/backend/dataset/PicnicTable.csv"; 
     importDB(filename);
 
-    printf("%s\n", Db->tableTypeTable->data[0]);
-    printf("%s\n", Db->neighborhoodTable->head->next->next->next->value);
+    exportDB("out.csv");
+
+    freeDB();
 
     return 0;
 }

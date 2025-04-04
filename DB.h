@@ -43,7 +43,8 @@ typedef struct nTable {
 }NeighbourhoodTable;
 
 struct pTableEntry {
-    int id;
+    int tableId;
+    char *id;
     int tableTypeIdx;
     int surfaceMatIdx;
     int structuralMatIdx;
@@ -158,7 +159,7 @@ Arguments:
     in the table.
 Returns: String with a success or failure message
 **********************************************************************/
-char *db_select(char *data, char *tableID, char *specifier);
+void db_select(char *data[], int data_len, char *specifier, char **buffer, int buffer_len);
 
 /***************************db_delete**********************************
 Author: Maria Reyes
