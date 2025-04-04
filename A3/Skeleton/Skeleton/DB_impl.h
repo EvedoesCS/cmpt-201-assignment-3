@@ -45,4 +45,7 @@ int getTableIndex(Table* table, char* value);
 
 //void freeNeighbourhoodTable(NeighbourhoodTable* table);
 
+void detokenize_impl(struct pTableEntry *curr, char line[512]); 
+
+
 #endif

@@ -233,4 +233,8 @@ void reportByWard();
 void freeDB();
 
 
+
+void init_lookupTable(Table *table, char *value);
+
+
 #endif

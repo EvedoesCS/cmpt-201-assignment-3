@@ -6,7 +6,7 @@
  *
  * Author: Helen Ly
  * Lab instructor: Dhara Wagh
- * Lecture instructor: Dhara Wagh
+ * Lecture instructor: Ardy RD
  * 
  * Disclaimer: Using atoi() function from stdlib.h 
  * to read a representation of a whole number from a string and returns its value.
@@ -46,7 +46,7 @@ void displayMenuOptions(){
     printf("4. Sort Data By A Member. \n");
     printf("5. Edit an Entry. \n");
     printf("6. Generate Reports. \n");
-    printf("7. Exit. \n");
+    printf("7. Exit. \n\n");
 }
 
 /*********************************************************************
@@ -171,12 +171,12 @@ int main(){
         if (cmd == 1){
 
             char filename[FILENAME_LEN] = {0};
-            printf("Enter the filename to be imported: \n");
+            printf("\n");
                 prompt_file_path_impl(filename);
                 db_create();
                 importDB(filename);
                 DatabaseImported = 1; //Update when database is imported sucessfully
-                printf("File %s has been imported.\n", filename);
+                printf("File %s has been imported.\n\n", filename);
                 
                 
             /*
@@ -189,17 +189,10 @@ int main(){
         
         else if (cmd == 2){
             char filename[FILENAME_LEN];
-            printf("Enter the filename to be imported: ");
             prompt_file_path_impl(filename);
-            printf("Need export here.\n");
-                //exportDB(filename);
-                printf("File %s has been exported", filename);
+            exportDB(filename);
+            printf("File %s has been exported\n\n", filename);
                 
-
-            /*
-            else {
-                exit(0);
-            }*/
         }
     
 

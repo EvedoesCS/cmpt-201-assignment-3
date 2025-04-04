@@ -118,3 +118,29 @@ void freeNeighbourhoodTable(NeighbourhoodTable* table) {
     freeNeighbourhoodTableR(table->head);
     free(table);
 }
+
+
+
+void detokenize_impl(struct pTableEntry *curr, char line[512]) {
+    strcat(line, curr->id);
+    strcat(line, ",");
+    strcat(line, Db->tableTypeTable->data[curr->tableTypeId]);
+    strcat(line, ",");
+    strcat(line, Db->surfaceMaterialTable->data[curr->surfaceMatId]);
+    strcat(line, ",");
+    strcat(line, Db->structuralMaterialTable->data[curr->structuralMatId]);
+    strcat(line, ",");
+    strcat(line, curr->street_ave);
+    strcat(line, ",");
+    strcat(line, curr->neighbourhoodId->code);
+    strcat(line, ",");
+    strcat(line, curr->neighbourhoodId->value);
+    strcat(line, ",");
+    strcat(line, curr->ward);
+    strcat(line, ",");
+    strcat(line, curr->latitude);
+    strcat(line, ",");
+    strcat(line, curr->longitude);
+    strcat(line, ",");
+    strcat(line, curr->location);
+}

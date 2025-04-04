@@ -163,6 +163,28 @@ void importDB(char *filename) {
     }
 }
 
+void exportDB(char *filename){
+    FILE* fp = fopen(filename, "w");
+
+    if(fp == NULL)
+    {
+        printf("Cannot open %s\n", filename);
+        return;
+    }
+
+    fprintf(fp, "Id,Table Type,Surface Material,Structural Material,Street / Avenue,Neighbourhood Id,Neighbourhood Name,Ward,Latitude,Longitude,Location\n");
+
+    struct pTableEntry *curr = Db->picnicTableTable->head; 
+
+    while (curr != NULL) {
+        char line[512] = {0};
+        detokenize_impl(curr, line);
+        fputs(line, fp);
+
+        curr = curr->next;
+    }
+}
+
 // void exportDB(char *filename){
 //    FILE* fp = fopen(filename, "w");
 
@@ -430,34 +452,13 @@ char *db_update(char *data, char *tableID, char *specifier){
 // }
 // */
 
-/*
-void editTableEntry(int tableID, char* memberName, char* newValue){
-
-    //array to hold key
-    char* data[1];
-    char specifier[MAX_SIZE];
-    snprintf(specifier, sizeof(specifier),"tableID=%d", tableID);
-
-    char kvPair[MAX_SIZE];
-    //format string in kvPair as memberNmae=newValue
-    snprintf(kvPair, sizeof(kvPair), "%s=%s", memberName, newValue);
-    data[0] = kvPair; //asigning the keyvalue pair to first index of data
-
-    char* result = db_update(kvPair, "picnicTable", specifier);
-
-    if (strcmp(result, "Success")!= 0)
-    {
-        fprintf(stderr,"Failed to update table entry.\n");
-    }
-
-    
-}
-*/
 
 
+
+//Helen
 void editTableEntry(int tableID, char *memberName, char *value) {
     struct pTableEntry *curr = Db->picnicTableTable->head;
-    while (curr) {
+    while (curr != NULL) {
         if (curr->id == tableID) {
             if (strcmp(memberName, "Table Type") == 0) {
                 init_lookupTable(Db->tableTypeTable, value);
