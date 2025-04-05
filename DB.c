@@ -273,18 +273,17 @@ PicnicTable to be updated. Acceptable specifiers are as follows:
 "Table Type", "Surface Material", "Structural Material";
 Returns: A message indicating Failure or Success
 *******************************************************************/
-char *db_update(char *data, char *tableID, char *specifier){
+void editTableEntry(int tableID, char *memberName, char *value){
     //find tableid
     
     struct pTableEntry* temp = Db->picnicTableTable->head;
-    int tableId = atoi(tableID);
 
     if (temp == NULL) {
-        return "Failure: picnicTableTable has no entries.";
+        return;
     }
 
     while (temp != NULL) {
-        if (temp->tableId == tableId) {
+        if (temp->tableId == tableID) {
             //If we reach here, we have found our table ID
             break;
         }
@@ -292,39 +291,39 @@ char *db_update(char *data, char *tableID, char *specifier){
     }
     if (temp == NULL) {
         //printf("tableID not found. Unable to edit entry.\n");
-        return "Failure: TableID not found.";
+        return;
     }
     
     //Compare memberName so we can select the table to insert into
-    if (strcmp(specifier, "tableTypeId") == 0) {
+    if (strcmp(memberName, "tableTypeId") == 0) {
         //printf("T - Table Type Selected!\n");
-        int index = getTableIndex(Db->tableTypeTable, data);
+        int index = getTableIndex(Db->tableTypeTable, value);
         if (index > 10) {
-            return "Failure: Could not find data in tableTypeTable.";
+            return;
         }
         temp->tableTypeIdx = index;
-        return "Success\n";
+        return;
 
-    } else if (strcmp(specifier, "surfaceMaterialId") == 0) {
+    } else if (strcmp(memberName, "surfaceMaterialId") == 0) {
         //printf("T - Surface Material Selected!\n");
-        int index = getTableIndex(Db->surfaceMaterialTable, data);
+        int index = getTableIndex(Db->surfaceMaterialTable, value);
         if (index > 10) {
-            return "Failure: Could not find data in surfaceMaterialTable.";
+            return;
         }
         temp->surfaceMatIdx = index;
-        return "Success";
+        return;
 
-    } else if (strcmp(specifier, "structuralMaterialId") == 0) {
+    } else if (strcmp(memberName, "structuralMaterialId") == 0) {
         //printf("T - Structural Material Selected!\n");
-        int index = getTableIndex(Db->structuralMaterialTable, data);
+        int index = getTableIndex(Db->structuralMaterialTable, value);
         if (index > 10) {
-            return "Failure: Could not find data in structuralMaterialTable.";
+            return;
         }
         temp->structuralMatIdx = index;
-        return "Success";
+        return;
     }
 
-    return "Failure: Could not find given member.";
+    return;
 }
 
 /******************************************************************
@@ -527,17 +526,4 @@ void freeDB() {
     freeNeighbourhoodTable(Db->neighborhoodTable);
     freePicnicTable(Db->picnicTableTable);
     free(Db);
-}
-
-int main(void) {
-    db_create();
-
-    char *filename = "./src/backend/dataset/PicnicTable.csv"; 
-    importDB(filename);
-
-    exportDB("out.csv");
-
-    freeDB();
-
-    return 0;
 }

@@ -184,7 +184,7 @@ int main(){
         }
         
         else if (cmd == 2){
-            char filename[FILENAME_LEN];
+            char filename[FILENAME_LEN] = {0};
             prompt_file_path_impl(filename);
             exportDB(filename);
             printf("File %s has been exported\n\n", filename);
@@ -195,14 +195,13 @@ int main(){
         
         else if(cmd == 3){
             printf("Need count Entry here.\n");
-            //countEntriesOptions();
+            countEntriesOptions();
         }
 
         else if (cmd ==4){
             char* memberName = memberNameforSortbyMember();
             printf("memberName is %s\n",memberName);
-            printf("Need sort by member function.\n");
-            //sortByMember (memberName);
+            sortByMember (memberName);
         }
 
         else if (cmd == 5){
@@ -220,6 +219,8 @@ int main(){
         //cmd = 0;
         
     }
+
+    freeDB();
     return 0;
 
 
