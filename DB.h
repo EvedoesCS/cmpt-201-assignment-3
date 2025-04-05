@@ -229,5 +229,8 @@ void reportByWard();
  */
 void freeDB();
 
+// Function initializes the global variable DB;
+// Allocates memory needed for each of its members;
+void db_create();
 
 #endif
