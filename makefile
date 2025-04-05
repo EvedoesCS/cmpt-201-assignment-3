@@ -7,7 +7,7 @@
 CC=gcc
 CFLAGS= -Wall -g -std=c99
 
-DB: DB.o DB_impl.o
+dashboard: dashboard.o DB.o DB_impl.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.o: %.c $(HEADERS)
@@ -17,4 +17,4 @@ clean:
 	rm *.o
 
 tar:
-	tar -zcvf cmpt201_eehmm_milestone1.tar.gz DB.h DB.c makefile CMPT201_A3_DashboardPlanning.pdf
+	tar -zcvf cmpt201_eehmm_milestone1.tar.gz DB.h DB.c DB_impl.h DB_impl.c dashboard.c makefile README.md CMPT201_A3_DashboardPlanning.pdf

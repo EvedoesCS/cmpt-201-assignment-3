@@ -5,9 +5,9 @@
  * Please do not modify any code in this file!  We will be testing your code
  * under the assumption that the public interface matches this interface.
  *
- * Author: <TODO: Group Member Names>
- * Lab instructor: <TODO: Your lab instructor's name here>
- * Lecture instructor: <TODO: Your lecture instructor's name here>
+ * Author: <Mathew, Ethan, Maria, Helen, Eve>
+ * Lab instructor: <Dhara Wagh>
+ * Lecture instructor: <Abullah Modiuddin>
  */
 
 #ifndef DB_H
@@ -103,39 +103,6 @@ Returns: void
 **********************************************************************/
 void exportDB(char *filename);
 
-/***************************db_query**********************************
-Author: Eve Leonard
-Purpose: Parses db commands and calls appropriate helper functions to 
-perfrom CRUD (Insert, Select, Update, Delete) functionalities on a db 
-struct;
-Arguments: 
-    stmt -> function pointer which calls the desired operation;
-    data -> array of string which need to be added, removed, or selected 
-    from the db struct. Expected to follow KV pair format 
-    Ex. ["Surface Material=foo", "Ward=bar"]
-    data_count -> the number of elements in data, operations will be 
-    performed / helper functions will be called "data_count" number of
-    times;
-    tableID -> The id of the table to perform the opperation on,
-    specifier -> optional targets needed to perform a command. For 
-    example to select row 4, id=4 will be passed. 
-    buffer -> buffer to write the requested data to.
-
-Returns: A string array with the requested data sorted in the same order
-as the corresponding items in data were proccessed.
-**********************************************************************/
-void db_query(statement stmt, char **data, int data_count, char *tableID, char *specifier, char **buffer);
-
-/***************************db_insert**********************************
-Author: Maria Reyes
-Purpose: Insets a new entry into a table in the db struct; 
-Arguments: data -> the data to insert, tableID -> the id of the table
-to insert into;
-Returns: String with a success or failure message
-**********************************************************************/
-char *db_insert(char *data, char *tableID, char *specifier);
-
-
 /***************************db_update**********************************
 Author: Matthew Meyer
 Purpose: Updates an Item in the db struct in the specified table.
@@ -146,7 +113,7 @@ Arguments:
     in tables.
 Returns: String with a success or failure message
 **********************************************************************/
-char *db_update(char *data, char *tableID, char *specifier);
+char *db_update(char *data, int tableID, char *specifier);
 
 /***************************db_select**********************************
 Author: Eve Leonard

@@ -143,4 +143,7 @@ Returns:
 **********************************************************************/
 int cmpWard(const void *a, const void *b);
 
+// Helper function to display menu options for count entries;
+void countEntriesOptions();
+
 #endif
