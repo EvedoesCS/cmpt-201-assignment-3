@@ -118,7 +118,15 @@ void detokenize_impl(struct pTableEntry *curr, char line[256]) {
     strcat(line, curr->location);
 }
 
-
+ /***************getTableIndex****************
+ Author: Matthew Meyer;
+ Purpose: Searches the data of a given table for a given
+ value, then returns the index of that value if found.
+ Arguments: Table* table -> the Table with the data we
+ want to search; char* value -> the value to search for.
+ Returns: The index of value in table if value could be found,
+ 11 otherwise.
+ ************************************************/
 int getTableIndex(Table* table, char* value) { //Gets the index of a given string in a table's array
     if (table == NULL) {
         printf("Table is NULL! Unable to get index!\n");
@@ -137,6 +145,14 @@ int getTableIndex(Table* table, char* value) { //Gets the index of a given strin
     return 11; //This means that we can't find it
 }
 
+ /***************freePicnicTableR****************
+ Author: Matthew Meyer;
+ Purpose: Called by freePicnicTable to recursively
+ free a picnicTable table.
+ Arguments: struct pTableEntry* current -> the Entry
+ in the picnicTable to be individually freed.
+ Returns: void.
+ ************************************************/
 void freePicnicTableR(struct pTableEntry* current) {
     if (current == NULL) { //Base case
         return;
@@ -162,11 +178,26 @@ void freePicnicTableR(struct pTableEntry* current) {
     current = NULL;
 }
 
+ /***************freePicnicTable****************
+ Author: Matthew Meyer;
+ Purpose: Calls freePicnicTableR to free a picnicTable table
+ Arguments: PicnicTable* Table -> The picnicTable to be freed
+ Returns: void
+ ************************************************/
 void freePicnicTable(PicnicTable* table) {
     freePicnicTableR(table->head);
     free(table);
 }
 
+
+ /***************freeNeighbourhoodTableR****************
+ Author: Matthew Meyer;
+ Purpose: Called by freeNeighbourhoodTable to recursively
+ free a NeighbourhoodTable table.
+ Arguments: struct nTableEntry* current -> the Entry
+ in the NeighbourhoodTable to be individually freed.
+ Returns: void.
+ ************************************************/
 void freeNeighbourhoodTableR(struct nTableEntry* current) {
     if (current == NULL) { //Base case
         return;
@@ -180,6 +211,12 @@ void freeNeighbourhoodTableR(struct nTableEntry* current) {
     current = NULL;
 }
 
+ /***************freeNeighbourhoodTable****************
+ Author: Matthew Meyer;
+ Purpose: Calls freeNeighbourhoodTableR to free a NeighbourhoodTable table
+ Arguments: NeighbourhoodTable* Table -> The NeighbourhoodTable to be freed
+ Returns: void
+ ************************************************/
 void freeNeighbourhoodTable(NeighbourhoodTable* table) {
     freeNeighbourhoodTableR(table->head);
     free(table);

@@ -247,6 +247,16 @@ void exportDB(char *filename){
 }
 
 
+/******************************************************************
+Author: Matthew Meyer;
+Purpose: Updates one of three specific members of the PicnicTable within
+the global DataBase Db
+Arguments: char* data -> the data to update; char* tableID -> the unique
+ID number of the PicnicTableEntry; char* specifier -> the member of the
+PicnicTable to be updated. Acceptable specifiers are as follows:
+"Table Type", "Surface Material", "Structural Material";
+Returns: A message indicating Failure or Success
+*******************************************************************/
 char *db_update(char *data, char *tableID, char *specifier){
     //find tableid
     
@@ -270,7 +280,7 @@ char *db_update(char *data, char *tableID, char *specifier){
     }
     
     //Compare memberName so we can select the table to insert into
-    if (strcmp(specifier, "Table Type") == 0) {
+    if (strcmp(specifier, "tableTypeId") == 0) {
         //printf("T - Table Type Selected!\n");
         int index = getTableIndex(Db->tableTypeTable, data);
         if (index > 10) {
@@ -279,28 +289,34 @@ char *db_update(char *data, char *tableID, char *specifier){
         temp->tableTypeIdx = index;
         return "Success\n";
 
-    } else if (strcmp(specifier, "Surface Material") == 0) {
+    } else if (strcmp(specifier, "surfaceMaterialId") == 0) {
         //printf("T - Surface Material Selected!\n");
         int index = getTableIndex(Db->surfaceMaterialTable, data);
         if (index > 10) {
             return "Failure: Could not find data in surfaceMaterialTable.";
         }
-        temp->tableTypeIdx = index;
+        temp->surfaceMatIdx = index;
         return "Success";
 
-    } else if (strcmp(specifier, "Structural Material") == 0) {
+    } else if (strcmp(specifier, "structuralMaterialId") == 0) {
         //printf("T - Structural Material Selected!\n");
         int index = getTableIndex(Db->structuralMaterialTable, data);
         if (index > 10) {
             return "Failure: Could not find data in structuralMaterialTable.";
         }
-        temp->tableTypeIdx = index;
+        temp->structuralMatIdx = index;
         return "Success";
     }
 
     return "Failure: Could not find given member.";
 }
 
+/******************************************************************
+Author: Matthew Meyer;
+Purpose: Frees the entire database
+Arguments: None
+Returns: void
+*******************************************************************/
 void freeDB() {
     for (int i = 0; i < 10; i++) {
         if (Db->tableTypeTable->data[i] != NULL) {
