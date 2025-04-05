@@ -36,13 +36,53 @@ void reportByWard();
 
 //DB_impl.h below
 
-
+/***************************cmpTableType**********************************
+Author: Ethan Collier
+Purpose: It compares the values for the table type from two picnic table entries in order
+Arguments:
+    const void *a -> Pointer to the first picnic table entry
+    const void *b -> Pointer to the second picnic table entry
+Returns:
+    Integer value from comparison (1, 0 or -1)
+**********************************************************************/
 int cmpTableType(const void *a, const void *b);
-
+/***************************cmpSurfaceMaterial**********************************
+Author: Ethan Collier
+Purpose: It compares the values for the surface material from two picnic table entries in order
+Arguments:
+    const void *a -> Pointer to the first picnic table entry
+    const void *b -> Pointer to the second picnic table entry
+Returns:
+    Integer value from comparison (1, 0 or -1)
+**********************************************************************/
 int cmpSurfaceMaterial(const void *a, const void *b);
-
+/***************************cmpStructuralMaterial**********************************
+Author: Ethan Collier
+Purpose: It compares the values for the structural materials from two picnic table entries in order
+Arguments:
+    const void *a -> Pointer to the first picnic table entry
+    const void *b -> Pointer to the second picnic table entry
+Returns:
+    Integer value from comparison (1, 0 or -1)
+**********************************************************************/
 int cmpStructuralMaterial(const void *a, const void *b);
-
+/***************************cmpNeighborhoodName**********************************
+Author: Ethan Collier
+Purpose: It compares the values for the neighborhood names from two picnic table entries in order
+Arguments:
+    const void *a -> Pointer to the first picnic table entry
+    const void *b -> Pointer to the second picnic table entry
+Returns:
+    Integer value from comparison (1, 0 or -1)
+**********************************************************************/
 int cmpNeighborhoodName(const void *a, const void *b);
-
+/***************************cmpNeighborhoodName**********************************
+Author: Ethan Collier
+Purpose: It compares the values for the wards from two picnic table entries in order
+Arguments:
+    const void *a -> Pointer to the first picnic table entry
+    const void *b -> Pointer to the second picnic table entry
+Returns:
+    Integer value from comparison (1, 0 or -1)
+**********************************************************************/
 int cmpWard(const void *a, const void *b);

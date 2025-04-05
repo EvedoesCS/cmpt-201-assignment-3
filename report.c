@@ -264,24 +264,25 @@ void reportByNeighbourhood() {
 
  //DB_impl.c below
 
+ //This is a comparison function tht compares table type entries
  int cmpTableType(const void *a, const void *b) {
     struct pTableEntry *entryA = *(struct pTableEntry **)a; //It defereneces and gets the entry
     struct pTableEntry *entryB = *(struct pTableEntry **)b;
     return strcmp(Db->tableTypeTable->data[entryA->tableTypeIdx], Db->tableTypeTable->data[entryB->tableTypeIdx]);
 }
-
+//This is a comparison function tht compares surface material entries
 int cmpSurfaceMaterial(const void *a, const void *b) {
     struct pTableEntry *entryA = *(struct pTableEntry **)a;
     struct pTableEntry *entryB = *(struct pTableEntry **)b;
     return strcmp(Db->surfaceMaterialTable->data[entryA->surfaceMatIdx], Db->surfaceMaterialTable->data[entryB->surfaceMatIdx]);
 }
-
+//This is a comparison function tht compares structural material entries
 int cmpStructuralMaterial(const void *a, const void *b) {
     struct pTableEntry *entryA = *(struct pTableEntry **)a;
     struct pTableEntry *entryB = *(struct pTableEntry **)b;
     return strcmp(Db->structuralMaterialTable->data[entryA->structuralMatIdx], Db->structuralMaterialTable->data[entryB->structuralMatIdx]);
 }
-
+//This is a comparison function tht compares neighborhood name entries
 int cmpNeighborhoodName(const void *a, const void *b) {
     struct pTableEntry *entryA = *(struct pTableEntry **)a;
     struct pTableEntry *entryB = *(struct pTableEntry **)b;
@@ -290,7 +291,7 @@ int cmpNeighborhoodName(const void *a, const void *b) {
     }
     return 0;
 }
-
+//This is a comparison function tht compares ward entries, uses atoi to find the number in the string
 int cmpWard(const void *a, const void *b) {
     struct pTableEntry *entryA = *(struct pTableEntry **)a;
     struct pTableEntry *entryB = *(struct pTableEntry **)b;
