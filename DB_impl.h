@@ -36,7 +36,7 @@ Returns: void;
 **********************************************/
 void tokenize_string_impl(char *line, char *tokens[11]); 
 
-void detokenize_impl(struct pTableEntry *curr, char line[512]); 
+void detokenize_impl(struct pTableEntry *curr, char line[256]); 
 
 int getTableIndex(Table* table, char* value);
 

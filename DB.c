@@ -87,6 +87,8 @@ void init_lookupTable(Table *table, char *value) {
         // Return early if value found in array;
         else if (strcmp(table->data[i], value) == 0) 
         {
+            free(table->data[i]);
+            table->data[i] = value;
             return;
         }
     }
@@ -109,6 +111,10 @@ void init_nTable(NeighbourhoodTable *nTable, char *code, char *value) {
     if (nTable->head != NULL) {
         while (curr->next != NULL) {
             if (strcmp(curr->next->code, code) == 0) {
+                free(curr->next->code);
+                free(curr->next->value);
+                curr->next->code = code;
+                curr->next->value = value;
                 return;
             }
             curr = curr->next;
@@ -140,7 +146,7 @@ Arguments: filename -> The path to the .csv file to import;
 Returns: void;
  *******************************************************************/
 void importDB(char *filename) {
-    char line[512];
+    char line[256];
     FILE *f_ptr = fopen(filename, "r");
 
     // Consume the first line in the file;
@@ -165,9 +171,16 @@ void importDB(char *filename) {
         struct pTableEntry *new_entry = malloc(sizeof(struct pTableEntry));
         new_entry->tableId = Db->picnicTableTable->size;
         new_entry->id = tokens[0];
-        new_entry->tableTypeIdx = getTableIndex(Db->tableTypeTable, tokens[1]);
-        new_entry->surfaceMatIdx = getTableIndex(Db->surfaceMaterialTable, tokens[2]);
-        new_entry->structuralMatIdx = getTableIndex(Db->structuralMaterialTable, tokens[3]);
+
+        if (tokens[1] != NULL) {
+            new_entry->tableTypeIdx = getTableIndex(Db->tableTypeTable, tokens[1]);
+        }
+        if (tokens[2] != NULL) {
+            new_entry->surfaceMatIdx = getTableIndex(Db->surfaceMaterialTable, tokens[2]);
+        }
+        if (tokens[3] != NULL) {
+            new_entry->structuralMatIdx = getTableIndex(Db->structuralMaterialTable, tokens[3]);
+        }
 
         new_entry->street_ave = tokens[4];
 
@@ -201,6 +214,8 @@ void importDB(char *filename) {
 
         Db->picnicTableTable->size++;
     }
+
+    fclose(f_ptr);
 }
 
 void exportDB(char *filename){
@@ -217,7 +232,7 @@ void exportDB(char *filename){
     struct pTableEntry *curr = Db->picnicTableTable->head; 
 
     while (curr != NULL) {
-        char line[512] = {0};
+        char line[256] = {0};
         detokenize_impl(curr, line);
         fputs(line, fp);
 
@@ -288,9 +303,16 @@ char *db_update(char *data, char *tableID, char *specifier){
 
 void freeDB() {
     for (int i = 0; i < 10; i++) {
-        free(Db->tableTypeTable->data[i]);
-        free(Db->surfaceMaterialTable->data[i]);
-        free(Db->structuralMaterialTable->data[i]);
+        if (Db->tableTypeTable->data[i] != NULL) {
+            free(Db->tableTypeTable->data[i]);
+        }
+        if (Db->surfaceMaterialTable->data[i] != NULL) {
+            free(Db->surfaceMaterialTable->data[i]);
+
+        }
+        if (Db->structuralMaterialTable->data[i] != NULL) {
+            free(Db->structuralMaterialTable->data[i]);
+        }
     }
 
     free(Db->tableTypeTable);
@@ -305,7 +327,7 @@ void freeDB() {
 int main(void) {
     db_create();
 
-    char *filename = "./src/backend/dataset/PicnicTableSmall.csv"; 
+    char *filename = "./src/backend/dataset/PicnicTable.csv"; 
     importDB(filename);
 
     exportDB("out.csv");

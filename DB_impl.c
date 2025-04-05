@@ -45,15 +45,21 @@ void prompt_file_path_impl(char *buffer) {
 }
 
 void tokenize_string_impl(char *line, char *tokens[11]) {
+    // Initialize variables;
     int wrd_start = 0;
     int wrd_end = 0;
     int idx = 0;
     int comma_count = 0;
 
-    for (int i = 0; i < strlen(line); i++) {
+    // Iterate over the whole line and splice by comma
+    // delimiter;
+    for (int i = 0; i < strlen(line) && idx < 11; i++) {
+        // Mark the end of a word if a comma
+        // is found;
         if (line[i] == 44) {
             comma_count++;
-            if (comma_count != 11) {
+            // Skips the 11th comma which is in the middle of location;
+            if (comma_count < 11) {
                 wrd_end = i;
                 int wrd_size = (wrd_end - wrd_start);
 
@@ -62,27 +68,33 @@ void tokenize_string_impl(char *line, char *tokens[11]) {
                 strncpy(new_word, (line + wrd_start), wrd_size);
                 new_word[wrd_size] = '\0';
 
+                // Place new work into array of tokens;
                 tokens[idx] = new_word;
                 idx++;
 
                 wrd_start = wrd_end + 1;
             }
+            else 
+            {
+                wrd_end = strlen(line);
+                int wrd_size = (wrd_end - wrd_start);
+
+                // Malloc Space for new word and copy data;
+                char *new_word = malloc(sizeof(char) * (wrd_size) + 1);
+                strncpy(new_word, (line + wrd_start), wrd_size);
+                new_word[wrd_size] = '\0';
+
+                tokens[idx] = new_word;
+                return;
+
+            }
         } 
-        wrd_end = strlen(line);
-        int wrd_size = (wrd_end - wrd_start);
-
-        // Malloc Space for new word and copy data;
-        char *new_word = malloc(sizeof(char) * (wrd_size) + 1);
-        strncpy(new_word, (line + wrd_start), wrd_size);
-        new_word[wrd_size] = '\0';
-
-        tokens[idx] = new_word;
 
     } 
 
 }
 
-void detokenize_impl(struct pTableEntry *curr, char line[512]) {
+void detokenize_impl(struct pTableEntry *curr, char line[256]) {
     strcat(line, curr->id);
     strcat(line, ",");
     strcat(line, Db->tableTypeTable->data[curr->tableTypeIdx]);
