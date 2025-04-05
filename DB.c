@@ -14,6 +14,8 @@
 #include "DB.h"       /* Import the public database header. */
 #include "DB_impl.h"  /* Import the private database header */
 
+#define MAX_SIZE 256
+
 DataBase *Db;
 
 /******************************************************************
@@ -115,13 +117,13 @@ void init_nTable(NeighbourhoodTable *nTable, char *code, char *value) {
         }
     }
 
-    // Init a new table entry node;
+    // Init a new table entry current;
     struct nTableEntry *new_node = malloc(sizeof(struct nTableEntry));
     new_node->code = code;
     new_node->value = value;
     new_node->next = NULL;
 
-    // Place new node in the neighbourhood linked list;
+    // Place new current in the neighbourhood linked list;
     if (nTable->head == NULL) {
         nTable->head = new_node;
         return;
@@ -138,12 +140,12 @@ global variable Db which must be initialized with the function
 db_create();
 Arguments: filename -> The path to the .csv file to import;
 Returns: void;
- *******************************************************************/
+*******************************************************************/
 void importDB(char *filename) {
     char line[512];
     FILE *f_ptr = fopen(filename, "r");
 
-    // Consume the first line in the file;
+    // Consume the current line in the file;
     fgets(line, sizeof(line), f_ptr);
 
     while (fgets(line, sizeof(line), f_ptr) != NULL) {
@@ -224,15 +226,22 @@ void exportDB(char *filename){
         curr = curr->next;
     }
 
-
-
     /*Close file*/
     fclose(fp);
 
 }
 
-
-char *db_update(char *data, char *tableID, char *specifier){
+/******************************************************************
+Author: Matthew Meyer;
+Purpose: Updates one of three specific members of the PicnicTable within
+the global DataBase Db
+Arguments: char* data -> the data to update; char* tableID -> the unique
+ID number of the PicnicTableEntry; char* specifier -> the member of the
+PicnicTable to be updated. Acceptable specifiers are as follows:
+"Table Type", "Surface Material", "Structural Material";
+Returns: A message indicating Failure or Success
+*******************************************************************/
+ char *db_update(char *data, char *tableID, char *specifier){
     //find tableid
     
     struct pTableEntry* temp = Db->picnicTableTable->head;
@@ -255,7 +264,7 @@ char *db_update(char *data, char *tableID, char *specifier){
     }
     
     //Compare memberName so we can select the table to insert into
-    if (strcmp(specifier, "Table Type") == 0) {
+    if (strcmp(specifier, "tableTypeId") == 0) {
         //printf("T - Table Type Selected!\n");
         int index = getTableIndex(Db->tableTypeTable, data);
         if (index > 10) {
@@ -264,28 +273,34 @@ char *db_update(char *data, char *tableID, char *specifier){
         temp->tableTypeIdx = index;
         return "Success\n";
 
-    } else if (strcmp(specifier, "Surface Material") == 0) {
+    } else if (strcmp(specifier, "surfaceMaterialId") == 0) {
         //printf("T - Surface Material Selected!\n");
         int index = getTableIndex(Db->surfaceMaterialTable, data);
         if (index > 10) {
             return "Failure: Could not find data in surfaceMaterialTable.";
         }
-        temp->tableTypeIdx = index;
+        temp->surfaceMatIdx = index;
         return "Success";
 
-    } else if (strcmp(specifier, "Structural Material") == 0) {
+    } else if (strcmp(specifier, "structuralMaterialId") == 0) {
         //printf("T - Structural Material Selected!\n");
         int index = getTableIndex(Db->structuralMaterialTable, data);
         if (index > 10) {
             return "Failure: Could not find data in structuralMaterialTable.";
         }
-        temp->tableTypeIdx = index;
+        temp->structuralMatIdx = index;
         return "Success";
     }
 
     return "Failure: Could not find given member.";
 }
 
+/******************************************************************
+Author: Matthew Meyer;
+Purpose: Frees the entire database
+Arguments: None
+Returns: void
+*******************************************************************/
 void freeDB() {
     for (int i = 0; i < 10; i++) {
         free(Db->tableTypeTable->data[i]);
@@ -301,6 +316,7 @@ void freeDB() {
     freePicnicTable(Db->picnicTableTable);
     free(Db);
 }
+
 
 int main(void) {
     db_create();
