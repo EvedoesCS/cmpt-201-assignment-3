@@ -175,34 +175,6 @@ Returns: String with a success or failure message
 char *db_delete(char *data, char *tableID, char *specifier);
 
 /*
- * Take the name of a member of the picnicTable entry and a value for that member 
- * as parameters and return the number of entries in the picnicTable which have 
- * that value for the memberName.
- * 
- * This is to be implemented for the following members:
- *  1- Table Type
- *  2- Surface Material
- *  3- Structural Material
- *  4- Neighborhood ID
- *  5- Neighborhood Name
- *  6- Ward
- */
-
-int countEntries(char *memberName, char * value);
-
-/*
- * Take the name of a member of the picnicTable entry as an argument 
- * and sort the table in ascending order of the entry values of that member. 
- * The function must be implemented for:
- *   1- Table Type
- *   2- Surface Material
- *   3- Structural Material
- *   4- Neighborhood Name
- *   5- Ward
- */
-void sortByMember(char *memberName);
-
-/*
  * Take a tableID, the name of a member of the picnicTable entry and a value for that 
  * member as parameters, and find the entry which has that tableID and 
  * change its memberName value to newValue. 
@@ -215,18 +187,42 @@ void sortByMember(char *memberName);
  */
 void editTableEntry(int tableID, char *memberName, char *value);
 
+/***************************countEntries**********************************
+Author: Ethan Collier
+Purpose: It counts how many entries match a specific memberName and value in the picnicTable
+Arguments:
+    memberName -> Name of the member to match (e.g., "Ward", "Table Type", "Neighbourhood Name").
+    value -> The value to count occurrences of for the given memberName.
+Returns: The number of entries that match the specified memberName and value.
+**********************************************************************/
+int countEntries(char *memberName, char *value);
 
+/***************************sortByMember**********************************
+Author: Ethan Collier
+Purpose: It sorts the picnicTable by the values of the specified memberName in order
+Arguments:
+    memberName -> Name of the member to sort by (e.g., "Ward", "Table Type").
+Returns: void
+**********************************************************************/
+void sortByMember(char *memberName);
 
-/*
- * print a listing of picnic tables grouped by neigbourhoods in ascending 
- * alphabetical order.
- */
+/***************************reportByNeighbourhood**********************************
+Author: Ethan Collier
+Purpose: It prints the list of picnic tables grouped by neighborhoods in alphabetical order
+Arguments: None
+Returns: void
+**********************************************************************/
 void reportByNeighbourhood();
 
-/*
- * print a listing of picnic tables grouped by wards in ascending order.
- */
+/***************************reportByWard**********************************
+Author: Ethan Collier
+Purpose: It prints the list of picnic tables grouped by wards in ascending numerical order
+Arguments: None
+Returns: void
+**********************************************************************/
 void reportByWard();
+
+
 
 /*
  * Frees all dynamic memory associated with each table upon exit. 
