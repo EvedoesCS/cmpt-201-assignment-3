@@ -23,12 +23,15 @@ Arguments: void;
 Returns: void;
  *******************************************************************/
 void db_create() {
+    // Allocate memory for the DB;
     Db = malloc(sizeof(DataBase));
     if (Db == NULL) {
         printf("ERROR: DataBase Creation Failed\n");
         return;
     }
 
+    // Allocate memory for each lookup table and check
+    // malloc was successfull;
     Db->tableTypeTable = malloc(sizeof(struct table));
     if (Db->tableTypeTable == NULL) {
         printf("ERROR: Failed to initialize a table\n");
@@ -54,15 +57,19 @@ void db_create() {
         printf("ERROR: Failed to initialize a table\n");
         return;
     }
+
+    // Initializes picnicTable members;
     Db->picnicTableTable->size = 0;
     Db->picnicTableTable->head = NULL;
 
+    // Initializes lookup table arrays to NULL;
     for (int i = 0; i < 10; i++) {
         Db->tableTypeTable->data[i] = NULL;
         Db->surfaceMaterialTable->data[i] = NULL;
         Db->structuralMaterialTable->data[i] = NULL;
     }
 
+    // Initializes members for neighbourhoodTable;
     Db->neighborhoodTable->head = NULL;
     Db->neighborhoodTable->size = 0;
 }
@@ -146,6 +153,7 @@ Arguments: filename -> The path to the .csv file to import;
 Returns: void;
  *******************************************************************/
 void importDB(char *filename) {
+    // Creates file ptr and variable to store lines;
     char line[256];
     FILE *f_ptr = fopen(filename, "r");
 
@@ -168,22 +176,22 @@ void importDB(char *filename) {
         init_nTable(Db->neighborhoodTable, tokens[5], tokens[6]);
         Db->neighborhoodTable->size++;
 
+        // Allocate space for a new picnicTable entry;
         struct pTableEntry *new_entry = malloc(sizeof(struct pTableEntry));
         new_entry->tableId = Db->picnicTableTable->size;
         new_entry->id = tokens[0];
 
-        if (tokens[1] != NULL) {
-            new_entry->tableTypeIdx = getTableIndex(Db->tableTypeTable, tokens[1]);
-        }
-        if (tokens[2] != NULL) {
-            new_entry->surfaceMatIdx = getTableIndex(Db->surfaceMaterialTable, tokens[2]);
-        }
-        if (tokens[3] != NULL) {
-            new_entry->structuralMatIdx = getTableIndex(Db->structuralMaterialTable, tokens[3]);
-        }
+        // Determine the indexes of table type, surface material and structural
+        // material in their respective lookup tables and place the value
+        // into the new entry;
+        new_entry->tableTypeIdx = getTableIndex(Db->tableTypeTable, tokens[1]);
+        new_entry->surfaceMatIdx = getTableIndex(Db->surfaceMaterialTable, tokens[2]);
+        new_entry->structuralMatIdx = getTableIndex(Db->structuralMaterialTable, tokens[3]);
 
         new_entry->street_ave = tokens[4];
 
+        // Initialize the neighbourhoodTableID and neighbourhoodTableName columns
+        // from the dataset;
         struct nTableEntry *nCurr = Db->neighborhoodTable->head;
         while (nCurr != NULL) {
             if (strcmp(nCurr->code, tokens[5]) == 0) {
@@ -192,6 +200,7 @@ void importDB(char *filename) {
             nCurr = nCurr->next;
         }
 
+        // Initializes the location members;
         new_entry->ward = tokens[7];
         new_entry->latitude = tokens[8];
         new_entry->longitude = tokens[9];
@@ -212,13 +221,17 @@ void importDB(char *filename) {
             curr->next = new_entry;
         }
 
+        // Increment size used to mark the ID of the entry;
         Db->picnicTableTable->size++;
     }
 
+    // Close the file pointer when iteration is finished.
     fclose(f_ptr);
 }
 
+
 void exportDB(char *filename){
+    // Open file pointer in writing mode and check for errors;
     FILE* fp = fopen(filename, "w");
 
     if(fp == NULL)
@@ -227,8 +240,11 @@ void exportDB(char *filename){
         return;
     }
 
+    // Print the .csv collumn labels;
     fprintf(fp, "Id,Table Type,Surface Material,Structural Material,Street / Avenue,Neighbourhood Id,Neighbourhood Name,Ward,Latitude,Longitude,Location\n");
 
+    // Iterate over each entry in the picnic table and detokenize the 
+    // members into a line to be written to the file;
     struct pTableEntry *curr = Db->picnicTableTable->head; 
 
     while (curr != NULL) {
@@ -312,12 +328,181 @@ char *db_update(char *data, char *tableID, char *specifier){
 }
 
 /******************************************************************
+ Author: Ethan Collier
+ Purpose: It counts the number of entries in the PicnicTable that match
+ a specific memberName and value within Db
+ Arguments:
+    char* memberName -> Name of the member to search for (e.g., "Ward",
+    "Table Type");
+    char* value -> The value to match the entries against for the memberName;
+ Returns: The number of entries that match the given memberName and value.
+ *******************************************************************/
+ int countEntries(char *memberName, char *value) {
+    if (!Db || !Db->picnicTableTable || !Db->picnicTableTable->head) {
+        printf("Error: Database is not initialized or empty.\n");
+        return 0;
+    }
+
+    int count = 0;
+    struct pTableEntry *current = Db->picnicTableTable->head; 
+
+    while (current) {
+        if (strcmp(memberName, "Table Type") == 0 && 
+            strcmp(Db->tableTypeTable->data[current->tableTypeIdx], value) == 0) { //It uses strcmp to check for matches based on the memberName and value
+            count++;
+        } else if (strcmp(memberName, "Surface Material") == 0 &&
+                   strcmp(Db->surfaceMaterialTable->data[current->surfaceMatIdx], value) == 0) {
+            count++;
+        } else if (strcmp(memberName, "Structural Material") == 0 &&
+                   strcmp(Db->structuralMaterialTable->data[current->structuralMatIdx], value) == 0) {
+            count++;
+        } else if (strcmp(memberName, "Neighborhood Name") == 0 &&
+                   current->neighbourhoodId && strcmp(current->neighbourhoodId->value, value) == 0) {
+            count++;
+        } else if (strcmp(memberName, "Ward") == 0 &&
+                   strcmp(current->ward, value) == 0) {
+            count++;
+        }
+        current = current->next;
+    }
+
+    return count;
+}
+/******************************************************************
+Author: Ethan Collier
+Purpose: It sorts the PicnicTable within Db by the
+values of the specified memberName in ascending order. "Ward" will
+be sorted numerically, while others will be sorted alphabetically
+Arguments:
+   char* memberName -> Name of the member to sort by (e.g., "Ward",
+   "Table Type", "Neighbourhood Name");
+Returns: void
+*******************************************************************/
+void sortByMember(char *memberName) {
+   if (!Db || !Db->picnicTableTable || !Db->picnicTableTable->head) {
+       printf("Error: Database is not initialized or empty.\n");
+       return;
+   }
+
+   int size = Db->picnicTableTable->size;
+   
+   struct pTableEntry **array = malloc(size * sizeof(struct pTableEntry *)); //This creates an array that'll be used for sorting
+   if (!array) {
+       printf("Error: Memory allocation failed.\n");
+       return;
+   }
+
+   struct pTableEntry *current = Db->picnicTableTable->head; 
+   for (int i = 0; i < size; i++) {
+       array[i] = current;
+       current = current->next;
+   }
+
+   int (*compare)(const void *, const void *) = NULL;
+
+   if (strcmp(memberName, "Table Type") == 0) { 
+       compare = cmpTableType; //Calls the comparison functions from DB_impl
+   } else if (strcmp(memberName, "Surface Material") == 0) {
+       compare = cmpSurfaceMaterial;
+   } else if (strcmp(memberName, "Structural Material") == 0) {
+       compare = cmpStructuralMaterial;
+   } else if (strcmp(memberName, "Neighbourhood Name") == 0) {
+       compare = cmpNeighborhoodName;
+   } else if (strcmp(memberName, "Ward") == 0) {
+       compare = cmpWard;
+   }
+
+   if (!compare) {
+       printf("Error: Unknown member name '%s'.\n", memberName);
+       free(array);
+       return;
+   }
+
+   qsort(array, size, sizeof(struct pTableEntry *), compare);
+
+   Db->picnicTableTable->head = array[0]; //It constructs the linked list from the sorted array
+   current = Db->picnicTableTable->head;
+   for (int i = 1; i < size; i++) {
+       current->next = array[i];
+       current = current->next;
+   }
+   current->next = NULL;
+
+   free(array);
+
+   printf("Successfully sorted by %s.\n", memberName);
+}
+/******************************************************************
+Author: Ethan Collier;
+Purpose: It prints a listing of PicnicTable entries grouped by wards
+in ascending numerical order from Db
+Arguments: None
+Returns: void
+*******************************************************************/
+void reportByWard() {
+   sortByMember("Ward");
+    if (!Db || !Db->picnicTableTable || !Db->picnicTableTable->head) {
+        printf("Error: Database is not initialized or empty.\n");
+        return;
+    }
+
+    struct pTableEntry *current = Db->picnicTableTable->head;
+
+    printf("\n--- Report by Ward ---\n");
+    while (current != NULL) {
+        printf("Ward: %s\n ID: %s\n Table Type: %s\n Surface Material: %s\n Structural Material: %s\n Street: %s\n Neighbourhood Name: %s\n Latitude: %s\n Longitude: %s\n\n",
+               current->ward,
+               current->id,
+               Db->tableTypeTable->data[current->tableTypeIdx],
+               Db->surfaceMaterialTable->data[current->surfaceMatIdx],
+               Db->structuralMaterialTable->data[current->structuralMatIdx],
+               current->street_ave,
+               current->neighbourhoodId->value,
+               current->latitude,
+               current->longitude);
+        current = current->next;
+    }
+}
+/******************************************************************
+Author: Ethan Collier
+Purpose: It prints a listing of PicnicTable entries grouped by neighbourhoods
+in ascending alphabetical order from Db
+Arguments: None
+Returns: void
+*******************************************************************/
+void reportByNeighbourhood() {
+   sortByMember("Neighbourhood Name");
+    if (!Db || !Db->picnicTableTable || !Db->picnicTableTable->head) {
+        printf("Error: Database is not initialized or empty.\n");
+        return;
+    }
+    struct pTableEntry *current = Db->picnicTableTable->head;
+
+    printf("\n--- Report by Neighbourhood ---\n");
+    while (current != NULL) {
+        printf("Neighbourhood Name: %s\n ID: %s\n Table Type: %s\n Surface Material: %s\n Structural Material: %s\n Street: %s\n Ward: %s\n Latitude: %s\n Longitude: %s\n\n",
+               current->neighbourhoodId->value,
+               current->id,
+               Db->tableTypeTable->data[current->tableTypeIdx],
+               Db->surfaceMaterialTable->data[current->surfaceMatIdx],
+               Db->structuralMaterialTable->data[current->structuralMatIdx],
+               current->street_ave,
+               current->ward,
+               current->latitude,
+               current->longitude);
+        current = current->next;
+    }
+}
+
+
+/******************************************************************
 Author: Matthew Meyer;
 Purpose: Frees the entire database
 Arguments: None
 Returns: void
 *******************************************************************/
 void freeDB() {
+    // Free the lookup table elements;
     for (int i = 0; i < 10; i++) {
         if (Db->tableTypeTable->data[i] != NULL) {
             free(Db->tableTypeTable->data[i]);
@@ -331,10 +516,14 @@ void freeDB() {
         }
     }
 
+    // Free lookup table structs;
     free(Db->tableTypeTable);
     free(Db->surfaceMaterialTable);
     free(Db->structuralMaterialTable);
 
+    // Calls recursive free'ing helper functions
+    // to free dynamic memory created by linked
+    // lists.
     freeNeighbourhoodTable(Db->neighborhoodTable);
     freePicnicTable(Db->picnicTableTable);
     free(Db);
